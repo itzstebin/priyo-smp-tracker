@@ -585,11 +585,11 @@ function getActiveListings({ search = '', category = 'All', sort = 'newest', pag
 
       const where = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
-      let orderBy = 'ORDER BY expires_at DESC, id DESC';
+      let orderBy = 'ORDER BY scanned_at DESC, id DESC';
       if (sort === 'lowest_price' || sort === 'cheapest' || sort === 'unit_price') orderBy = 'ORDER BY unit_price ASC, price ASC';
       if (sort === 'highest_price' || sort === 'expensive') orderBy = 'ORDER BY unit_price DESC, price DESC';
       if (sort === 'ending_soon') orderBy = 'ORDER BY expires_at ASC';
-      if (sort === 'newest') orderBy = 'ORDER BY expires_at DESC, id DESC';
+      if (sort === 'newest') orderBy = 'ORDER BY scanned_at DESC, id DESC';
 
       const offset = (page - 1) * limit;
 
