@@ -18,7 +18,7 @@
     "nextPageSlot": 53
   },
   "api": {
-    "endpoint": "https://priyo-smp-tracker.vercel.app/api/ingest",
-    "ordersEndpoint": "https://priyo-smp-tracker.vercel.app/api/ingest-orders"
+    "endpoint": "https://priyo-smp-tracker-production.up.railway.app/api/ingest",
+    "ordersEndpoint": "https://priyo-smp-tracker-production.up.railway.app/api/ingest-orders"
   }
 }

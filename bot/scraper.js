@@ -613,21 +613,28 @@ class AhScraperBot {
     }, 15000);
   }
 
+  findHopperSlot(cur) {
+    if (!cur || !cur.slots) return 50;
+    const idx = cur.slots.findIndex((s, i) => i >= 45 && i <= 53 && s && s.name && s.name.includes('hopper'));
+    return idx !== -1 ? idx : 50;
+  }
+
   async ensureAhFilterIsAll(window) {
     let cur = this.bot.currentWindow || window;
-    const hopper = cur.slots[48];
+    const hopperSlot = this.findHopperSlot(cur);
+    const hopper = cur.slots[hopperSlot];
     if (!hopper) return;
     if (isFilterAllSelected(hopper)) {
-      console.log('✅ AH Filter is already set to ALL.');
+      console.log(`✅ AH Filter (slot ${hopperSlot}) is already set to ALL.`);
       return;
     }
 
-    console.log('🔄 AH Filter is NOT set to ALL. Cycling forward to reach ALL...');
+    console.log(`🔄 AH Filter (slot ${hopperSlot}) is NOT set to ALL. Cycling forward to reach ALL...`);
     for (let c = 0; c < 12; c++) {
-      await this.bot.clickWindow(48, 0, 0); // Left-click cycles forward in /ah
+      await this.bot.clickWindow(hopperSlot, 0, 0); // Left-click cycles forward in /ah
       await new Promise(r => setTimeout(r, 700));
       cur = this.bot.currentWindow || window;
-      const updated = cur.slots[48];
+      const updated = cur.slots[hopperSlot];
       const isAll = isFilterAllSelected(updated);
       console.log(`[AH Filter Click ${c + 1}] is ALL now? ${isAll}`);
       if (isAll) {
@@ -640,19 +647,20 @@ class AhScraperBot {
 
   async ensureOrdersFilterIsAll(window) {
     let cur = this.bot.currentWindow || window;
-    const hopper = cur.slots[48];
+    const hopperSlot = this.findHopperSlot(cur);
+    const hopper = cur.slots[hopperSlot];
     if (!hopper) return;
     if (isFilterAllSelected(hopper)) {
-      console.log('✅ Orders Filter is already set to All.');
+      console.log(`✅ Orders Filter (slot ${hopperSlot}) is already set to All.`);
       return;
     }
 
-    console.log('🔄 Orders Filter is NOT set to All. Cycling forward using left-click...');
+    console.log(`🔄 Orders Filter (slot ${hopperSlot}) is NOT set to All. Cycling forward using left-click...`);
     for (let c = 0; c < 12; c++) {
-      await this.bot.clickWindow(48, 0, 0); // Left-click cycles forward in /order
+      await this.bot.clickWindow(hopperSlot, 0, 0); // Left-click cycles forward in /order
       await new Promise(r => setTimeout(r, 700));
       cur = this.bot.currentWindow || window;
-      const updated = cur.slots[48];
+      const updated = cur.slots[hopperSlot];
       const isAll = isFilterAllSelected(updated);
       console.log(`[Orders Filter Click ${c + 1}] is All now? ${isAll}`);
       if (isAll) {
@@ -788,7 +796,7 @@ class AhScraperBot {
 
       // Push real scraped data to Backend API
       if (allListings.length > 0) {
-        console.log(`📤 Pushing ${allListings.length} REAL listings to API: ${config.api.endpoint}`);
+        console.log(`📤 Pushing ${allListings.length} REAL listings to API: ${this.getIngestEndpoint()}`);
         await this.pushToApi(allListings);
       } else {
         console.log('ℹ️ No items detected in AH.');
@@ -946,23 +954,33 @@ class AhScraperBot {
   }
 
   async pushOrdersToApi(orders) {
-    const endpoint = this.getOrdersEndpoint();
-    try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          source: 'mineflayer-bot',
-          server: config.server.host,
-          timestamp: Date.now(),
-          count: orders.length,
-          orders: orders
-        })
-      });
-      const data = await res.json();
-      console.log(`✅ Server saved ${orders.length} REAL buy orders! Response:`, data);
-    } catch (apiErr) {
-      console.error(`⚠️ Could not reach API at ${endpoint}:`, apiErr.message);
+    const endpoints = [
+      this.getOrdersEndpoint(),
+      'https://priyo-smp-tracker-production.up.railway.app/api/ingest-orders',
+      'https://priyo-smp-tracker.vercel.app/api/ingest-orders'
+    ];
+    if (process.env.PORT) {
+      endpoints.push(`http://127.0.0.1:${process.env.PORT}/api/ingest-orders`);
+    }
+
+    const payload = JSON.stringify({
+      source: 'mineflayer-bot',
+      server: config.server.host,
+      timestamp: Date.now(),
+      count: orders.length,
+      orders: orders
+    });
+
+    for (const ep of [...new Set(endpoints)]) {
+      try {
+        const res = await fetch(ep, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload
+        });
+        const data = await res.json();
+        console.log(`✅ [${ep}] Saved ${orders.length} buy orders! Response:`, data);
+      } catch (err) {}
     }
   }
 
@@ -1049,22 +1067,33 @@ class AhScraperBot {
   }
 
   async pushToApi(listings) {
-    try {
-      const res = await fetch(this.getIngestEndpoint(), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          source: 'mineflayer-bot',
-          server: config.server.host,
-          timestamp: Date.now(),
-          count: listings.length,
-          listings: listings
-        })
-      });
-      const data = await res.json();
-      console.log(`✅ Server saved ${listings.length} REAL listings! Response:`, data);
-    } catch (apiErr) {
-      console.error(`⚠️ Could not reach API at ${this.getIngestEndpoint()}:`, apiErr.message);
+    const endpoints = [
+      this.getIngestEndpoint(),
+      'https://priyo-smp-tracker-production.up.railway.app/api/ingest',
+      'https://priyo-smp-tracker.vercel.app/api/ingest'
+    ];
+    if (process.env.PORT) {
+      endpoints.push(`http://127.0.0.1:${process.env.PORT}/api/ingest`);
+    }
+
+    const payload = JSON.stringify({
+      source: 'mineflayer-bot',
+      server: config.server.host,
+      timestamp: Date.now(),
+      count: listings.length,
+      listings: listings
+    });
+
+    for (const ep of [...new Set(endpoints)]) {
+      try {
+        const res = await fetch(ep, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload
+        });
+        const data = await res.json();
+        console.log(`✅ [${ep}] Saved ${listings.length} listings! Response:`, data);
+      } catch (err) {}
     }
   }
 
