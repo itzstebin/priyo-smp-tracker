@@ -1,1 +1,1 @@
-web: npm run bot
+web: node server/index.js

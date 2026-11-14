@@ -436,11 +436,22 @@ app.use((req, res, next) => {
 });
 
 if (!process.env.VERCEL) {
+  global.__EXPRESS_SERVER_STARTED__ = true;
   app.listen(PORT, () => {
     console.log(`=======================================================`);
     console.log(`🚀 PriyoStats (DonutStats for Priyo SMP) is LIVE at: http://localhost:${PORT}`);
     console.log(`📡 Ingestion Endpoint: http://localhost:${PORT}/api/ingest`);
     console.log(`=======================================================`);
+
+    // Auto-launch the 24/7 scraper bot in persistent cloud environments (Railway, Render, VPS)
+    if (process.env.RUN_BOT !== 'false') {
+      try {
+        console.log('🤖 Auto-starting 24/7 scraper bot (helloeveryoneiam)...');
+        require('../bot/scraper.js');
+      } catch (botErr) {
+        console.error('Failed to auto-start bot:', botErr.message);
+      }
+    }
   });
 }
 
