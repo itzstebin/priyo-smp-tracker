@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="en" class="XRqLeq_variable GEQXDG_variable Q3g5Aa_variable dark" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stats</title>
+  
+  <!-- DonutStats Production Fonts & Stylesheets -->
+  <link rel="stylesheet" href="/donut-assets/2x37xcn8q2nfc.css">
+  <link rel="stylesheet" href="/donut-assets/2izqdvv049mjc.css">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" href="/donut-assets/priyosmp_logo.png" type="image/png">
+  <script src="/chart.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex min-h-dvh flex-col bg-bg text-fg font-sans antialiased selection:bg-fg selection:text-bg">
+
+  <!-- =========================================================================
+       AUTHENTIC PRIYOSMP STATS STICKY HEADER
+       ========================================================================= -->
+  <header class="sticky top-0 z-40 border-b border-[#222226] bg-[#0c0c0e]/95 backdrop-blur-md pt-[env(safe-area-inset-top)]">
+    <div class="container-page flex h-16 items-center gap-2">
+      <!-- Brand Logo -->
+      <a aria-label="Stats home" class="-ml-0.5 shrink-0 rounded-full cursor-pointer brand-logo-link" onclick="navigateTo('stats')">
+        <span class="inline-flex items-center gap-2.5">
+          <img alt="PriyoSMP Stats" class="h-8 w-auto object-contain pixelated" src="/donut-assets/priyosmp_logo.png">
+          <span class="font-display text-xl font-bold tracking-[-0.04em] text-white"><span class="text-[#ff8ab8]">Stats</span></span>
+        </span>
+      </a>
+
+      <!-- Desktop Nav Menu (Exact DonutStats Layout) -->
+      <nav aria-label="Main" class="ml-6 desktop-nav">
+        <ul class="flex items-center gap-1">
+          <li><a id="nav-link-stats" class="nav-btn active" onclick="navigateTo('stats')">Stats</a></li>
+          <li><a id="nav-link-rankings" class="nav-btn" onclick="navigateTo('rankings')">Rankings</a></li>
+          <li><a id="nav-link-auction" class="nav-btn" onclick="navigateTo('auction')">Auction</a></li>
+          <li><a id="nav-link-orders" class="nav-btn" onclick="navigateTo('orders')">Orders</a></li>
+          <li><a id="nav-link-flips" class="nav-btn" onclick="navigateTo('flips')">Flips</a></li>
+          <li><a id="nav-link-prices" class="nav-btn" onclick="navigateTo('prices')">Prices</a></li>
+          <li><a id="nav-link-economy" class="nav-btn" onclick="navigateTo('economy')">Economy</a></li>
+          <li><a id="nav-link-calculator" class="nav-btn" onclick="navigateTo('calculator')">Calculator</a></li>
+          <li><a id="nav-link-dev" class="nav-btn" onclick="navigateTo('dev')">Dev</a></li>
+        </ul>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="ml-auto flex items-center gap-2">
+        <!-- Live Server Online Indicator -->
+        <div class="hidden sm:inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-3 py-1 text-xs text-fg font-medium">
+          <span class="online-pulse-dot"></span>
+          <span id="nav-online-count" class="tabular-nums">-- online</span>
+        </div>
+
+        <!-- Search Form -->
+        <form role="search" onsubmit="event.preventDefault(); handleHeaderSearch();" class="relative hidden w-64 md:block xl:w-56 2xl:w-72">
+          <div class="flex items-center rounded-full border border-line-strong bg-surface transition-[border-color,box-shadow] duration-150 focus-within:border-fg focus-within:ring-4 focus-within:ring-fg/8 h-10 pr-1 pl-3.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search shrink-0 text-subtle size-4" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+            <input id="header-search-input" type="search" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="16" placeholder="Search a player" class="h-full min-w-0 flex-1 bg-transparent text-fg outline-none placeholder:text-subtle px-2.5 text-sm">
+            <button type="submit" aria-label="Look up player" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-fg font-medium text-bg transition-colors duration-150 hover:bg-fg/85 size-8">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right size-4" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+          </div>
+        </form>
+
+        <!-- Theme Toggle -->
+        <button type="button" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle dark/light theme" class="relative inline-flex size-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-fg">
+          <svg id="theme-sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun size-[18px] hidden"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+          <svg id="theme-moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon size-[18px]"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       MAIN SPA ROUTING CONTAINER
+       ========================================================================= -->
+  <main id="main" class="flex-1">
+
+    <!-- =======================================================================
+         VIEW 1: STATS / PLAYERS DIRECTORY (/stats & /players - 100% DonutStats)
+         ======================================================================= -->
+    <div id="view-stats" class="view-container">
+      <header class="container-page pt-5 pb-6 sm:pt-6">
+        <nav aria-label="Breadcrumb" class="min-w-0 mb-4">
+          <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-subtle">
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Home</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><span aria-current="page" class="truncate text-fg font-medium">Stats</span></li>
+          </ol>
+        </nav>
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+          <div class="max-w-3xl min-w-0">
+            <h1 class="text-display text-[1.875rem] leading-[1.05] sm:text-[2.5rem]">Find a player</h1>
+            <div class="mt-2 text-[15px] leading-relaxed text-muted">Search any username.</div>
+          </div>
+          <div class="flex shrink-0 items-center gap-2">
+            <button onclick="navigateTo('rankings')" class="inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-colors duration-150 border border-line-strong bg-surface text-fg hover:bg-surface-2 h-9 px-4 text-[13px]">
+              Rankings<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right size-3.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Big Search Bar -->
+        <div class="mt-5 max-w-2xl">
+          <form onsubmit="event.preventDefault(); onStatsSearchSubmit();" class="relative flex items-center rounded-full border border-line-strong bg-surface transition-[border-color,box-shadow] duration-150 focus-within:border-fg focus-within:ring-4 focus-within:ring-fg/8 h-12 pr-1 pl-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search size-4 text-subtle"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+            <input id="stats-player-search-input" type="search" placeholder="Search a username" class="h-full min-w-0 flex-1 bg-transparent px-3 text-sm text-fg outline-none placeholder:text-subtle">
+            <button type="submit" class="inline-flex items-center gap-1.5 rounded-full bg-fg px-4 py-2 text-xs font-semibold text-bg hover:bg-fg/85 transition-colors">
+              Search<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right size-3.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+          </form>
+        </div>
+      </header>
+
+      <!-- Browse Players Section (2-Column Grid) -->
+      <section class="container-page mt-2 mb-10">
+        <div class="stats-layout-grid">
+          <!-- Left Column: Browse Players Table -->
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+              <div>
+                <h2 class="text-display text-[1.375rem] leading-tight sm:text-[1.625rem]">Browse players</h2>
+                <p id="stats-total-players-sub" class="mt-0.5 text-xs text-subtle">8,460 tracked players</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="relative flex h-9 items-center rounded-full border border-line-strong bg-surface pr-3 pl-3 text-xs">
+                  <input id="stats-filter-name" oninput="onStatsFilterName(this.value)" placeholder="Usernames starting with" class="bg-transparent text-fg outline-none placeholder:text-subtle w-44">
+                </div>
+                <div class="inline-flex rounded-full bg-surface-2 p-0.5 text-xs font-medium">
+                  <button id="stats-btn-richest" onclick="setStatsSort('richest')" class="px-3 py-1 rounded-full bg-fg text-bg font-semibold">Richest</button>
+                  <button id="stats-btn-recent" onclick="setStatsSort('recent')" class="px-3 py-1 rounded-full text-muted hover:text-fg">Recently updated</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Players Table -->
+            <div class="mt-4 overflow-hidden card">
+              <div class="stats-table-header grid grid-cols-[2.5rem_minmax(0,1.5fr)_6.5rem_5.5rem_4.5rem_2rem] items-center gap-3 border-b border-line px-5 py-2.5 text-xs font-medium text-subtle">
+                <span>#</span>
+                <span>Player</span>
+                <span class="text-right">Money</span>
+                <span class="text-right">Playtime</span>
+                <span class="text-right">Kills</span>
+                <span></span>
+              </div>
+              <ul id="stats-players-table" class="divide-y divide-line text-sm">
+                <!-- Populated by JS -->
+              </ul>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-4 flex items-center justify-between">
+              <div id="stats-pagination-info" class="text-xs text-muted">1 to 50 of 8,460</div>
+              <div id="stats-pagination-pills" class="flex gap-1">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Sidebar -->
+          <aside class="stats-sidebar space-y-4">
+            <!-- Yellow Online Now Card -->
+            <div data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-butter p-6 flex flex-col justify-between">
+              <div class="flex items-center gap-2">
+                <span class="online-pulse-dot"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-ink/75">Online now</span>
+              </div>
+              <div class="mt-4">
+                <p id="stats-online-count-big" class="text-display text-5xl font-extrabold leading-none">44</p>
+                <p class="mt-2 text-xs font-medium text-ink/70">players on Priyo SMP right now</p>
+              </div>
+            </div>
+
+            <!-- Most Viewed This Week Card -->
+            <div class="card p-5">
+              <h3 class="text-sm font-semibold text-fg">Most viewed this week</h3>
+              <ul id="stats-most-viewed-list" class="mt-4 space-y-3">
+                <!-- Populated by JS -->
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </div>
+
+    <!-- =======================================================================
+         VIEW 2: RANKINGS & LEADERBOARDS (/rankings - 100% DonutStats Multi-Card)
+         ======================================================================= -->
+    <div id="view-rankings" class="view-container view-hidden">
+      <header class="container-page pt-5 pb-6 sm:pt-6">
+        <nav aria-label="Breadcrumb" class="min-w-0 mb-4">
+          <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-subtle">
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Home</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><span aria-current="page" class="truncate text-fg font-medium">Leaderboards</span></li>
+          </ol>
+        </nav>
+        <div class="max-w-3xl min-w-0">
+          <h1 class="text-display text-[1.875rem] leading-[1.05] sm:text-[2.5rem]">Leaderboards</h1>
+          <div class="mt-2 text-[15px] leading-relaxed text-muted">Every Priyo SMP leaderboard in one place.</div>
+        </div>
+      </header>
+
+      <section class="container-page mt-2 mb-10">
+        <!-- Top Row Leaderboards Grid -->
+        <div class="rankings-top-grid">
+          <!-- 1. Money Card (Wide Pink with 3D Character on the Right) -->
+          <div data-block="" class="rankings-money-card">
+            <div class="rankings-money-left">
+              <div>
+                <div class="flex items-center justify-between cursor-pointer" onclick="openLeaderboardDetail('money')">
+                  <span class="text-sm font-bold uppercase tracking-wider text-ink/75 hover:underline">Money</span>
+                  <span class="text-xs text-ink/75 font-semibold hover:underline flex items-center gap-1">Full board<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right size-3.5"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></span>
+                </div>
+                <div class="mt-4">
+                  <p class="text-xs text-ink/65">Richest player</p>
+                  <h3 id="rk-money-top-name" class="text-display text-2xl font-bold cursor-pointer hover:underline" onclick="openPlayerProfile(this.textContent)">Achuuzz</h3>
+                  <p id="rk-money-top-val" class="text-display text-4xl sm:text-5xl font-extrabold mt-1 cursor-pointer" onclick="openLeaderboardDetail('money')">₹1.12B</p>
+                </div>
+              </div>
+              <!-- Ranks 2-5 -->
+              <ul id="rk-money-rows" class="mt-6 space-y-2.5 border-t border-ink/15 pt-3 text-xs font-medium relative z-10 w-full">
+                <!-- Populated by JS -->
+              </ul>
+            </div>
+            <!-- Standing 3D Character Render positioned on the right side -->
+            <img id="rk-money-player-body" alt="Richest Player" class="rankings-player-model cursor-pointer" onclick="openLeaderboardDetail('money')" src="https://mc-heads.net/body/Achuuzz/right" onerror="this.src='/donut-assets/logo.37iyq8y7zugbp.png'">
+          </div>
+
+          <!-- 2. Playtime Card (Yellow) -->
+          <div data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-butter p-5 flex flex-col justify-between min-h-[340px]">
+            <div>
+              <div class="flex items-center justify-between cursor-pointer" onclick="openLeaderboardDetail('playtime')">
+                <span class="text-sm font-bold uppercase tracking-wider text-ink/75 hover:underline">Playtime</span>
+                <span class="text-xs text-ink/75 font-semibold hover:underline flex items-center gap-0.5">Full board →</span>
+              </div>
+              <div class="mt-3 flex items-center gap-2 cursor-pointer" onclick="openPlayerProfile(document.getElementById('rk-play-top-name').textContent)">
+                <img id="rk-play-avatar" class="size-6 rounded pixelated" src="/donut-assets/logo.37iyq8y7zugbp.png">
+                <span id="rk-play-top-name" class="text-xs font-semibold truncate hover:underline">Achuuzz</span>
+              </div>
+              <p id="rk-play-top-val" class="text-display text-3xl font-extrabold mt-1 cursor-pointer" onclick="openLeaderboardDetail('playtime')">428h</p>
+            </div>
+            <ul id="rk-play-rows" class="mt-4 space-y-2 border-t border-ink/15 pt-3 text-xs">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+
+          <!-- 3. Kills Card (Peach) -->
+          <div data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-peach p-5 flex flex-col justify-between min-h-[340px]">
+            <div>
+              <div class="flex items-center justify-between cursor-pointer" onclick="openLeaderboardDetail('kills')">
+                <span class="text-sm font-bold uppercase tracking-wider text-ink/75 hover:underline">Kills</span>
+                <span class="text-xs text-ink/75 font-semibold hover:underline flex items-center gap-0.5">Full board →</span>
+              </div>
+              <div class="mt-3 flex items-center gap-2 cursor-pointer" onclick="openPlayerProfile(document.getElementById('rk-kills-top-name').textContent)">
+                <img id="rk-kills-avatar" class="size-6 rounded pixelated" src="/donut-assets/logo.37iyq8y7zugbp.png">
+                <span id="rk-kills-top-name" class="text-xs font-semibold truncate hover:underline">JoshzGaming</span>
+              </div>
+              <p id="rk-kills-top-val" class="text-display text-3xl font-extrabold mt-1 cursor-pointer" onclick="openLeaderboardDetail('kills')">918</p>
+            </div>
+            <ul id="rk-kills-rows" class="mt-4 space-y-2 border-t border-ink/15 pt-3 text-xs">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Middle Row: Shards & Deaths -->
+        <div class="mt-4 rankings-bottom-grid">
+          <!-- Shards (Lilac) -->
+          <div data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-lilac p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between cursor-pointer" onclick="openLeaderboardDetail('shards')">
+                <span class="text-sm font-bold uppercase tracking-wider text-ink/75 hover:underline">Shards</span>
+                <span class="text-xs text-ink/75 font-semibold hover:underline flex items-center gap-0.5">Full board →</span>
+              </div>
+              <p id="rk-shards-top-val" class="text-display text-3xl font-extrabold mt-2 cursor-pointer" onclick="openLeaderboardDetail('shards')">36.2K</p>
+            </div>
+            <ul id="rk-shards-rows" class="mt-4 space-y-2 border-t border-ink/15 pt-3 text-xs">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+
+          <!-- Deaths (Dark Card) -->
+          <div class="card p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between cursor-pointer" onclick="openLeaderboardDetail('deaths')">
+                <span class="text-sm font-bold uppercase tracking-wider text-muted hover:text-fg">Deaths</span>
+                <span class="text-xs text-subtle hover:text-fg hover:underline font-medium">Full board →</span>
+              </div>
+              <p id="rk-deaths-top-val" class="text-display text-3xl font-extrabold text-fg mt-2 cursor-pointer" onclick="openLeaderboardDetail('deaths')">256</p>
+            </div>
+            <ul id="rk-deaths-rows" class="mt-4 space-y-2 border-t border-line pt-3 text-xs text-fg">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+
+          <!-- Bounties (Dark Card) -->
+          <div class="card p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between cursor-pointer" onclick="openLeaderboardDetail('bounties')">
+                <span class="text-sm font-bold uppercase tracking-wider text-muted hover:text-fg">Bounties</span>
+                <span class="text-xs text-subtle hover:text-fg hover:underline font-medium">Full board →</span>
+              </div>
+              <p id="rk-bounty-top-val" class="text-display text-3xl font-extrabold text-fg mt-2 cursor-pointer" onclick="openLeaderboardDetail('bounties')">₹500K</p>
+            </div>
+            <ul id="rk-bounty-rows" class="mt-4 space-y-2 border-t border-line pt-3 text-xs text-fg">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+
+          <!-- Mob Kills (Dark Card) -->
+          <div class="card p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between cursor-pointer" onclick="openLeaderboardDetail('mob-kills')">
+                <span class="text-sm font-bold uppercase tracking-wider text-muted hover:text-fg">Mob kills</span>
+                <span class="text-xs text-subtle hover:text-fg hover:underline font-medium">Full board →</span>
+              </div>
+              <p id="rk-mob-top-val" class="text-display text-3xl font-extrabold text-fg mt-2 cursor-pointer" onclick="openLeaderboardDetail('mob-kills')">85.4K</p>
+            </div>
+            <ul id="rk-mob-rows" class="mt-4 space-y-2 border-t border-line pt-3 text-xs text-fg">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Bottom Row: Blocks Broken & Blocks Placed -->
+        <div class="mt-4 rankings-blocks-grid">
+          <!-- Blocks broken -->
+          <div class="card p-5">
+            <div class="flex items-center justify-between mb-2 cursor-pointer" onclick="openLeaderboardDetail('blocks-broken')">
+              <span class="text-sm font-bold uppercase tracking-wider text-muted hover:text-fg">Blocks broken</span>
+              <span class="text-xs text-subtle hover:text-fg hover:underline font-medium">Full board →</span>
+            </div>
+            <ul id="rk-broken-rows" class="space-y-2 text-xs text-fg">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+
+          <!-- Blocks placed -->
+          <div class="card p-5">
+            <div class="flex items-center justify-between mb-2 cursor-pointer" onclick="openLeaderboardDetail('blocks-placed')">
+              <span class="text-sm font-bold uppercase tracking-wider text-muted hover:text-fg">Blocks placed</span>
+              <span class="text-xs text-subtle hover:text-fg hover:underline font-medium">Full board →</span>
+            </div>
+            <ul id="rk-placed-rows" class="space-y-2 text-xs text-fg">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- How the leaderboards work card -->
+        <div class="mt-8 rounded-[20px] card p-6">
+          <h3 class="text-display text-lg">How the leaderboards work</h3>
+          <p class="mt-2 text-xs leading-relaxed text-muted">Leaderboards track every registered player on Priyo SMP. Money reflects bank and pocket balance from /baltop. Playtime, kills, and blocks sync directly from server stats.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- =======================================================================
+         VIEW 2B: FULL LEADERBOARD DETAIL (/rankings/:type - 100% DonutStats)
+         Deaths, Bounties, Mob kills, Blocks broken, Blocks placed, Shards, Money, Playtime, Kills
+         ======================================================================= -->
+    <div id="view-leaderboard-detail" class="view-container view-hidden">
+      <header class="container-page pt-5 pb-6 sm:pt-6">
+        <nav aria-label="Breadcrumb" class="min-w-0 mb-4">
+          <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-subtle">
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Home</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('rankings')">Leaderboards</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><span id="board-breadcrumb-title" class="truncate text-fg font-medium">Deaths</span></li>
+          </ol>
+        </nav>
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+          <div class="max-w-3xl min-w-0">
+            <h1 id="board-hero-title" class="text-display text-[1.875rem] leading-[1.05] sm:text-[2.5rem]">Deaths Leaderboard</h1>
+            <div id="board-hero-subtitle" class="mt-2 text-[15px] leading-relaxed text-muted">Top players ranked by deaths on Priyo SMP.</div>
+          </div>
+          <div class="flex shrink-0 items-center gap-2">
+            <button onclick="navigateTo('rankings')" class="inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-colors duration-150 border border-line-strong bg-surface text-fg hover:bg-surface-2 h-9 px-4 text-[13px]">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left size-3.5"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
+              All leaderboards
+            </button>
+          </div>
+        </div>
+
+        <!-- 9 Category Filter Pills (Exact DonutStats Categories) -->
+        <div class="mt-6 flex flex-wrap gap-1.5" role="tablist">
+          <button type="button" onclick="setLeaderboardType('money')" class="board-type-pill nav-btn" data-type="money">Money</button>
+          <button type="button" onclick="setLeaderboardType('playtime')" class="board-type-pill nav-btn" data-type="playtime">Playtime</button>
+          <button type="button" onclick="setLeaderboardType('kills')" class="board-type-pill nav-btn" data-type="kills">Kills</button>
+          <button type="button" onclick="setLeaderboardType('shards')" class="board-type-pill nav-btn" data-type="shards">Shards</button>
+          <button type="button" onclick="setLeaderboardType('deaths')" class="board-type-pill nav-btn" data-type="deaths">Deaths</button>
+          <button type="button" onclick="setLeaderboardType('bounties')" class="board-type-pill nav-btn" data-type="bounties">Bounties</button>
+          <button type="button" onclick="setLeaderboardType('mob-kills')" class="board-type-pill nav-btn" data-type="mob-kills">Mob kills</button>
+          <button type="button" onclick="setLeaderboardType('blocks-broken')" class="board-type-pill nav-btn" data-type="blocks-broken">Blocks broken</button>
+          <button type="button" onclick="setLeaderboardType('blocks-placed')" class="board-type-pill nav-btn" data-type="blocks-placed">Blocks placed</button>
+        </div>
+      </header>
+
+      <section class="container-page mt-2 mb-10">
+        <!-- Search and Info Header -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div class="relative flex h-10 items-center rounded-full border border-line-strong bg-surface transition-[border-color,box-shadow] duration-150 focus-within:border-fg focus-within:ring-4 focus-within:ring-fg/8 w-72">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search pointer-events-none absolute left-3.5 size-4 text-subtle"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+            <input id="board-search-input" oninput="onBoardSearch(this.value)" placeholder="Search players..." class="h-full w-full min-w-0 bg-transparent pr-4 pl-10 text-sm text-fg outline-none placeholder:text-subtle" type="search">
+          </div>
+          <span id="board-total-count" class="text-xs text-subtle tabular-nums">8,463 ranked players</span>
+        </div>
+
+        <!-- Leaderboard Full Table -->
+        <div class="overflow-hidden card">
+          <div class="rankings-table-header grid grid-cols-[3rem_minmax(0,1.5fr)_8rem_7rem] items-center gap-4 border-b border-line px-5 py-3 text-xs font-semibold text-subtle bg-surface/50">
+            <span>#</span>
+            <span>Player</span>
+            <span id="board-col-metric" class="text-right">Value</span>
+            <span id="board-col-secondary" class="text-right">Balance</span>
+          </div>
+          <ul id="board-table-rows" class="divide-y divide-line text-sm">
+            <!-- Populated by JS -->
+          </ul>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-4 flex items-center justify-between">
+          <div id="board-pagination-info" class="text-xs text-muted">1 to 50 of 8,463</div>
+          <div id="board-pagination-pills" class="flex gap-1">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- =======================================================================
+         VIEW 3: AUCTION HOUSE (/auction)
+         ======================================================================= -->
+    <div id="view-auction" class="view-container view-hidden">
+      <header class="container-page pt-5 pb-6 sm:pt-6">
+        <nav aria-label="Breadcrumb" class="min-w-0 mb-4">
+          <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-subtle">
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Home</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><span aria-current="page" class="truncate text-fg font-medium">Auction house</span></li>
+          </ol>
+        </nav>
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+          <div class="max-w-3xl min-w-0">
+            <h1 class="text-display text-[1.875rem] leading-[1.05] sm:text-[2.5rem]">Auction house</h1>
+            <div class="mt-2 text-[15px] leading-relaxed text-muted">Every live listing on Priyo SMP /ah.</div>
+          </div>
+          <div class="flex shrink-0 flex-wrap items-center gap-2">
+            <button onclick="navigateTo('orders')" class="inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-colors duration-150 border border-line-strong bg-surface text-fg hover:bg-surface-2 h-8 px-3.5 text-[13px]">
+              Buy orders<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right size-3.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+            <button onclick="navigateTo('prices')" class="inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-colors duration-150 border border-line-strong bg-surface text-fg hover:bg-surface-2 h-8 px-3.5 text-[13px]">
+              Item prices<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right size-3.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+          </div>
+        </div>
+        
+        <!-- 5-Metric Strip -->
+        <div class="mt-5">
+          <dl class="grid grid-cols-2 gap-px overflow-hidden rounded-[20px] border border-line bg-line sm:grid-cols-3 lg:grid-cols-5">
+            <div class="min-w-0 bg-surface p-4 sm:px-5 col-span-2 sm:col-span-1">
+              <dt class="truncate text-[13px] font-medium text-muted">Active listings</dt>
+              <dd id="ah-stat-active" class="mt-1.5 truncate text-display text-2xl leading-none sm:text-[1.75rem]">1,089</dd>
+            </div>
+            <div class="min-w-0 bg-surface p-4 sm:px-5">
+              <dt class="truncate text-[13px] font-medium text-muted">Liquid value</dt>
+              <dd id="ah-stat-liquid" class="mt-1.5 truncate text-display text-2xl leading-none sm:text-[1.75rem]">₹490.5M</dd>
+            </div>
+            <div class="min-w-0 bg-surface p-4 sm:px-5">
+              <dt class="truncate text-[13px] font-medium text-muted">Listed in 24h</dt>
+              <dd id="ah-stat-listed24h" class="mt-1.5 truncate text-display text-2xl leading-none sm:text-[1.75rem]">1,089</dd>
+            </div>
+            <div class="min-w-0 bg-surface p-4 sm:px-5">
+              <dt class="truncate text-[13px] font-medium text-muted">Gone in 24h</dt>
+              <dd id="ah-stat-gone" class="mt-1.5 truncate text-display text-2xl leading-none sm:text-[1.75rem]">142</dd>
+            </div>
+            <div class="min-w-0 bg-surface p-4 sm:px-5 sm:max-lg:col-span-2">
+              <dt class="truncate text-[13px] font-medium text-muted">Updated</dt>
+              <dd id="ah-stat-updated" class="mt-1.5 truncate text-display text-2xl leading-none sm:text-[1.75rem]">Just now</dd>
+            </div>
+          </dl>
+        </div>
+      </header>
+
+      <!-- Deals Section -->
+      <section aria-labelledby="deals-title" class="container-page mt-2 mb-8 sm:mt-4 sm:mb-10">
+        <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+          <div class="max-w-2xl min-w-0">
+            <h2 id="deals-title" class="text-display text-[1.375rem] leading-tight sm:text-[1.625rem]">Deals</h2>
+          </div>
+          <div class="shrink-0">
+            <p class="text-[13px] text-subtle">40% under both the market and top buy order</p>
+          </div>
+        </div>
+        <ul id="deals-container" class="mt-4 ah-deals-grid">
+          <!-- Populated by JS -->
+        </ul>
+      </section>
+
+      <!-- Live Listings Section with Sidebar -->
+      <div class="container-page mt-2 sm:mt-4 ah-main-grid">
+        <section aria-labelledby="listings-title" class="min-w-0">
+          <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <div class="max-w-2xl min-w-0">
+              <h2 id="listings-title" class="text-display text-[1.375rem] leading-tight sm:text-[1.625rem]">Live listings</h2>
+            </div>
+            <div class="shrink-0">
+              <p id="ah-total-listings-badge" aria-live="polite" class="text-[13px] text-subtle tabular-nums">1,089 listings</p>
+            </div>
+          </div>
+
+          <!-- Controls: Search, Sort, Categories -->
+          <div class="mt-4 flex flex-col gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="relative flex h-10 items-center rounded-full border border-line-strong bg-surface transition-[border-color,box-shadow] duration-150 focus-within:border-fg focus-within:ring-4 focus-within:ring-fg/8 min-w-48 flex-1 sm:max-w-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search pointer-events-none absolute left-3.5 size-4 text-subtle"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                <input id="ah-search-input" oninput="onAhSearch(this.value)" placeholder="Search items" class="h-full w-full min-w-0 bg-transparent pr-4 pl-10 text-base text-fg outline-none placeholder:text-subtle sm:text-sm" type="search">
+              </div>
+              <select id="ah-sort-select" onchange="onAhSort(this.value)" class="inline-flex h-10 items-center justify-between rounded-full border border-line-strong bg-surface px-4 text-sm text-fg outline-none hover:bg-surface-2 sm:ml-auto">
+                <option value="newest">Newest</option>
+                <option value="ending_soon">Ending soon</option>
+                <option value="lowest_price">Lowest unit price</option>
+                <option value="highest_price">Highest unit price</option>
+              </select>
+            </div>
+
+            <!-- Categories Bar -->
+            <div id="ah-category-pills" role="radiogroup" aria-label="Filter by category" class="flex flex-wrap gap-1.5">
+              <button type="button" onclick="setAhCategory('All')" class="ah-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-fg bg-fg text-bg" data-cat="All">All</button>
+              <button type="button" onclick="setAhCategory('Valuables')" class="ah-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Valuables">Valuables</button>
+              <button type="button" onclick="setAhCategory('Combat')" class="ah-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Combat">Combat</button>
+              <button type="button" onclick="setAhCategory('Tools')" class="ah-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Tools">Tools</button>
+              <button type="button" onclick="setAhCategory('Mob drops')" class="ah-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Mob drops">Mob drops</button>
+              <button type="button" onclick="setAhCategory('Potions and books')" class="ah-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Potions and books">Potions and books</button>
+              <button type="button" onclick="setAhCategory('Food')" class="ah-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Food">Food</button>
+              <button type="button" onclick="setAhCategory('Blocks')" class="ah-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Blocks">Blocks</button>
+              <button type="button" onclick="setAhCategory('Other')" class="ah-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Other">Other</button>
+            </div>
+          </div>
+
+          <!-- Listings Grid -->
+          <ul id="ah-items-container" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+            <!-- Populated by JS -->
+          </ul>
+
+          <!-- Auction House Pagination -->
+          <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-line pt-4">
+            <div id="ah-pagination-info" class="text-xs text-muted">Showing 1 to 24 of 560 listings</div>
+            <div id="ah-pagination-pills" class="flex items-center gap-1">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Sidebar: Just left the auction house -->
+        <aside aria-labelledby="gone-title" class="min-w-0 xl:sticky xl:top-20 xl:self-start">
+          <div class="overflow-hidden card">
+            <div class="px-4 pt-4 sm:px-5">
+              <h2 id="gone-title" class="text-[15px] font-semibold text-fg">Just left the auction house</h2>
+              <p class="mt-0.5 text-xs text-subtle">Sold, taken down or expired</p>
+            </div>
+            <ul id="just-left-list" class="mt-3 divide-y divide-line">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- =======================================================================
+         VIEW 4: BUY ORDERS (/orders - 100% Matching DonutStats 1:1)
+         ======================================================================= -->
+    <div id="view-orders" class="view-container view-hidden">
+      <header class="container-page pt-5 pb-6 sm:pt-6">
+        <nav aria-label="Breadcrumb" class="min-w-0 mb-4">
+          <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-subtle">
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Home</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><span aria-current="page" class="truncate text-fg font-medium">Orders</span></li>
+          </ol>
+        </nav>
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+          <div class="max-w-3xl min-w-0">
+            <p class="text-xs text-subtle mb-1">Updated just now</p>
+            <h1 class="text-display text-[1.875rem] leading-[1.05] sm:text-[2.5rem]">Orders</h1>
+            <div class="mt-2 text-[15px] leading-relaxed text-muted">Every open buy order on /orders.</div>
+          </div>
+          <div class="flex shrink-0 flex-wrap items-center gap-2">
+            <button onclick="navigateTo('auction')" class="inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-colors duration-150 border border-line-strong bg-surface text-fg hover:bg-surface-2 h-8 px-3.5 text-[13px]">
+              Auction house<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right size-3.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+            <button onclick="navigateTo('prices')" class="inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-colors duration-150 border border-line-strong bg-surface text-fg hover:bg-surface-2 h-8 px-3.5 text-[13px]">
+              Item prices<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right size-3.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <dl class="grid grid-cols-2 gap-px overflow-hidden rounded-[20px] border border-line bg-line sm:grid-cols-3 lg:grid-cols-5">
+            <div class="min-w-0 bg-surface p-4 sm:px-5 col-span-2 sm:col-span-1">
+              <dt class="truncate text-[13px] font-medium text-muted">Open orders</dt>
+              <dd id="orders-stat-count" class="mt-1.5 truncate text-display text-2xl leading-none sm:text-[1.75rem]">41</dd>
+            </div>
+            <div class="min-w-0 bg-surface p-4 sm:px-5">
+              <dt class="truncate text-[13px] font-medium text-muted">Money waiting</dt>
+              <dd id="orders-stat-money" class="mt-1.5 truncate text-display text-2xl leading-none sm:text-[1.75rem]">₹809.9M</dd>
+            </div>
+            <div class="min-w-0 bg-surface p-4 sm:px-5">
+              <dt class="truncate text-[13px] font-medium text-muted">Delivered in 24h</dt>
+              <dd id="orders-stat-delivered" class="mt-1.5 truncate text-display text-2xl leading-none sm:text-[1.75rem]">181</dd>
+            </div>
+            <div class="min-w-0 bg-surface p-4 sm:px-5">
+              <dt class="truncate text-[13px] font-medium text-muted">Paid out in 24h</dt>
+              <dd id="orders-stat-payout" class="mt-1.5 truncate text-display text-2xl leading-none sm:text-[1.75rem]">₹18.0M</dd>
+            </div>
+            <div class="min-w-0 bg-surface p-4 sm:px-5 sm:max-lg:col-span-2">
+              <dt class="truncate text-[13px] font-medium text-muted">New in 24h</dt>
+              <dd class="mt-1.5 truncate text-display text-2xl leading-none sm:text-[1.75rem]">41</dd>
+            </div>
+          </dl>
+        </div>
+      </header>
+
+      <!-- Orders Section with 2 Columns -->
+      <div class="container-page mt-2 sm:mt-4 orders-layout-grid">
+        <section aria-labelledby="orders-title" class="min-w-0">
+          <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+            <div class="max-w-2xl min-w-0">
+              <h2 id="orders-title" class="text-display text-[1.375rem] leading-tight sm:text-[1.625rem]">Open orders</h2>
+            </div>
+            <div class="shrink-0">
+              <p id="orders-total-badge" class="text-[13px] text-subtle tabular-nums">41 orders</p>
+            </div>
+          </div>
+
+          <div class="mt-4 flex flex-col gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="relative flex h-10 items-center rounded-full border border-line-strong bg-surface transition-[border-color,box-shadow] duration-150 focus-within:border-fg focus-within:ring-4 focus-within:ring-fg/8 min-w-48 flex-1 sm:max-w-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search pointer-events-none absolute left-3.5 size-4 text-subtle"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                <input id="orders-search-input" oninput="onOrdersSearch(this.value)" placeholder="Search items" class="h-full w-full min-w-0 bg-transparent pr-4 pl-10 text-base text-fg outline-none placeholder:text-subtle sm:text-sm" type="search">
+              </div>
+              <div class="inline-flex rounded-full bg-surface-2 p-0.5 text-xs font-medium">
+                <button class="px-3 py-1 rounded-full bg-fg text-bg font-semibold">Serious</button>
+                <button class="px-3 py-1 rounded-full text-muted hover:text-fg">All</button>
+              </div>
+              <select id="orders-sort-select" onchange="onOrdersSort(this.value)" class="inline-flex h-10 items-center justify-between rounded-full border border-line-strong bg-surface px-4 text-sm text-fg outline-none hover:bg-surface-2 sm:ml-auto">
+                <option value="highest_payout">Biggest payout left</option>
+                <option value="lowest_price">Lowest unit price</option>
+                <option value="highest_price">Highest unit price</option>
+              </select>
+            </div>
+
+            <!-- Categories Bar -->
+            <div id="orders-category-pills" role="radiogroup" class="flex flex-wrap gap-1.5">
+              <button type="button" onclick="setOrdersCategory('All')" class="order-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-fg bg-fg text-bg" data-cat="All">All</button>
+              <button type="button" onclick="setOrdersCategory('Valuables')" class="order-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Valuables">Valuables</button>
+              <button type="button" onclick="setOrdersCategory('Combat')" class="order-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Combat">Combat</button>
+              <button type="button" onclick="setOrdersCategory('Tools')" class="order-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Tools">Tools</button>
+              <button type="button" onclick="setOrdersCategory('Mob drops')" class="order-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Mob drops">Mob drops</button>
+              <button type="button" onclick="setOrdersCategory('Potions and books')" class="order-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Potions and books">Potions and books</button>
+              <button type="button" onclick="setOrdersCategory('Food')" class="order-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Food">Food</button>
+              <button type="button" onclick="setOrdersCategory('Blocks')" class="order-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Blocks">Blocks</button>
+              <button type="button" onclick="setOrdersCategory('Other')" class="order-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Other">Other</button>
+            </div>
+          </div>
+
+          <!-- Orders Table (1:1 DonutStats Layout: Item, Price each, vs market, Delivered, Payout left, Seen) -->
+          <div class="mt-4 overflow-hidden card">
+            <div aria-hidden="true" class="orders-table-header hidden min-h-11 items-center border-b border-line px-5 py-2.5 text-xs font-medium text-subtle bg-surface/50 md:grid md:grid-cols-[minmax(0,1.5fr)_6.5rem_5rem_minmax(6rem,8rem)_6.5rem_4.5rem] md:gap-x-4">
+              <span>Item</span>
+              <span class="text-right">Price each</span>
+              <span class="text-right">vs market</span>
+              <span>Delivered</span>
+              <span class="text-right">Payout left</span>
+              <span class="text-right">Deadline</span>
+            </div>
+            <ul id="orders-table-body" class="divide-y divide-line">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+
+          <!-- Orders Pagination -->
+          <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-line pt-4">
+            <div id="orders-pagination-info" class="text-xs text-muted">Showing 1 to 20 of 0 orders</div>
+            <div id="orders-pagination-pills" class="flex items-center gap-1">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Right: Most wanted items -->
+        <aside aria-labelledby="wanted-title" class="min-w-0 xl:sticky xl:top-20 xl:self-start">
+          <div class="overflow-hidden card">
+            <div class="px-4 pt-4 sm:px-5">
+              <h2 id="wanted-title" class="text-[15px] font-semibold text-fg">Most wanted items</h2>
+              <p class="mt-0.5 text-xs text-subtle">Money waiting in serious open orders</p>
+            </div>
+            <ul id="orders-most-wanted-sidebar" class="mt-3 divide-y divide-line">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- =======================================================================
+         VIEW 5: ITEM PRICES DIRECTORY (/prices)
+         ======================================================================= -->
+    <div id="view-prices" class="view-container view-hidden">
+      <header class="container-page pt-5 pb-6 sm:pt-6">
+        <nav aria-label="Breadcrumb" class="min-w-0 mb-4">
+          <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-subtle">
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Home</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><span aria-current="page" class="truncate text-fg font-medium">Prices</span></li>
+          </ol>
+        </nav>
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+          <div class="max-w-3xl min-w-0">
+            <h1 class="text-display text-[1.875rem] leading-[1.05] sm:text-[2.5rem]">Item prices</h1>
+            <div class="mt-2 text-[15px] leading-relaxed text-muted">Live from the auction house and buy orders.</div>
+          </div>
+          <div class="flex shrink-0 flex-wrap items-center gap-2">
+            <button onclick="navigateTo('orders')" class="inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-colors duration-150 border border-line-strong bg-surface text-fg hover:bg-surface-2 h-8 px-3.5 text-[13px]">
+              Buy orders<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right size-3.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+            <button onclick="navigateTo('auction')" class="inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-colors duration-150 border border-line-strong bg-surface text-fg hover:bg-surface-2 h-8 px-3.5 text-[13px]">
+              Auction house<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right size-3.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Top Metric Cards (Exact DonutStats Colors) -->
+        <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- Card 1: Most Wanted (Pink) -->
+          <div id="prices-card-wanted-box" data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-pink flex h-full flex-col p-4 cursor-pointer">
+            <div class="flex min-w-0 items-center gap-3">
+              <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/55">
+                <span id="prices-card-wanted-icon" class="relative inline-flex shrink-0" style="width: 26px; height: 26px;">
+                  <img alt="Item" width="26" height="26" class="size-full pixelated" src="/donut-assets/ancient_debris.png">
+                </span>
+              </span>
+              <span class="min-w-0">
+                <span class="block truncate text-[13px] font-medium text-ink/65">Most wanted</span>
+                <span id="prices-card-wanted-item" class="block truncate text-sm font-medium">Ancient Debris</span>
+              </span>
+            </div>
+            <div class="mt-auto flex items-end justify-between gap-3 pt-3">
+              <div class="min-w-0">
+                <p id="prices-card-wanted-val" class="truncate text-display text-[1.75rem] leading-none">₹24.93M</p>
+                <p id="prices-card-wanted-sub" class="mt-1.5 flex items-center gap-1.5 truncate text-xs whitespace-nowrap text-ink/65">in 11 open orders</p>
+              </div>
+              <canvas id="sparkline-wanted" width="90" height="32" class="shrink-0"></canvas>
+            </div>
+          </div>
+
+          <!-- Card 2: Most Listed (Yellow) -->
+          <div id="prices-card-listed-box" data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-butter flex h-full flex-col p-4 cursor-pointer">
+            <div class="flex min-w-0 items-center gap-3">
+              <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/55">
+                <span id="prices-card-listed-icon" class="relative inline-flex shrink-0" style="width: 26px; height: 26px;">
+                  <img alt="Enchanted Book" width="26" height="26" class="size-full pixelated" src="/donut-assets/enchanted_book.png">
+                </span>
+              </span>
+              <span class="min-w-0">
+                <span class="block truncate text-[13px] font-medium text-ink/65">Most listed</span>
+                <span id="prices-card-listed-item" class="block truncate text-sm font-medium">Enchanted Book</span>
+              </span>
+            </div>
+            <div class="mt-auto flex items-end justify-between gap-3 pt-3">
+              <div class="min-w-0">
+                <p id="prices-card-listed-val" class="truncate text-display text-[1.75rem] leading-none">83</p>
+                <p id="prices-card-listed-sub" class="mt-1.5 flex items-center gap-1.5 truncate text-xs whitespace-nowrap text-ink/65">listings from ₹4.9K</p>
+              </div>
+              <canvas id="sparkline-listed" width="90" height="32" class="shrink-0"></canvas>
+            </div>
+          </div>
+
+          <!-- Card 3: Top Mover (Mint Green) -->
+          <div id="prices-card-mover-box" data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-mint flex h-full flex-col p-4 cursor-pointer">
+            <div class="flex min-w-0 items-center gap-3">
+              <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/55">
+                <span id="prices-card-mover-icon" class="relative inline-flex shrink-0" style="width: 26px; height: 26px;">
+                  <img alt="Block of Redstone" width="26" height="26" class="size-full pixelated" src="/donut-assets/block_of_redstone.png">
+                </span>
+              </span>
+              <span class="min-w-0">
+                <span class="block truncate text-[13px] font-medium text-ink/65">Top mover</span>
+                <span id="prices-card-mover-item" class="block truncate text-sm font-medium">Block of Redstone</span>
+              </span>
+            </div>
+            <div class="mt-auto flex items-end justify-between gap-3 pt-3">
+              <div class="min-w-0">
+                <p id="prices-card-mover-val" class="truncate text-display text-[1.75rem] leading-none">₹4.1K</p>
+                <p id="prices-card-mover-sub" class="mt-1.5 flex items-center gap-1.5 truncate text-xs whitespace-nowrap text-emerald-600 font-semibold"><svg class="size-3.5 inline-block text-emerald-600 shrink-0 stroke-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg> +1641.2% 7 days</p>
+              </div>
+              <canvas id="sparkline-mover" width="90" height="32" class="shrink-0"></canvas>
+            </div>
+          </div>
+
+          <!-- Card 4: Top Buy Order (Dark) -->
+          <div id="prices-card-toporder-box" class="rounded-[20px] card flex h-full flex-col p-4 cursor-pointer">
+            <div class="flex min-w-0 items-center gap-3">
+              <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 ring-1 ring-line">
+                <span id="prices-card-toporder-icon" class="relative inline-flex shrink-0" style="width: 26px; height: 26px;">
+                  <img alt="Dirt" width="26" height="26" class="size-full pixelated" src="/donut-assets/dirt.png">
+                </span>
+              </span>
+              <span class="min-w-0">
+                <span class="block truncate text-[13px] font-medium text-muted">Top buy order</span>
+                <span id="prices-card-toporder-item" class="block truncate text-sm font-medium text-fg">Dirt</span>
+              </span>
+            </div>
+            <div class="mt-auto flex items-end justify-between gap-3 pt-3">
+              <div class="min-w-0">
+                <p id="prices-card-toporder-val" class="truncate text-display text-[1.75rem] leading-none text-fg">₹850.00M</p>
+                <p id="prices-card-toporder-sub" class="mt-1.5 flex items-center gap-1.5 truncate text-xs whitespace-nowrap text-muted">best open buy order</p>
+              </div>
+              <canvas id="sparkline-toporder" width="90" height="32" class="shrink-0"></canvas>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- All Items Directory Section -->
+      <section class="container-page mt-2 mb-10 sm:mt-4">
+        <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+          <div class="max-w-2xl min-w-0">
+            <h2 class="text-display text-[1.375rem] leading-tight sm:text-[1.625rem]">All items</h2>
+          </div>
+          <div class="shrink-0">
+            <p id="prices-total-items-badge" class="text-[13px] text-subtle tabular-nums">191 items</p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-col gap-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="relative flex h-10 items-center rounded-full border border-line-strong bg-surface transition-[border-color,box-shadow] duration-150 focus-within:border-fg focus-within:ring-4 focus-within:ring-fg/8 min-w-48 flex-1 sm:max-w-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search pointer-events-none absolute left-3.5 size-4 text-subtle"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+              <input id="prices-search-input" oninput="onPricesSearch(this.value)" placeholder="Search items" class="h-full w-full min-w-0 bg-transparent pr-4 pl-10 text-base text-fg outline-none placeholder:text-subtle sm:text-sm" type="search">
+            </div>
+            <select id="prices-sort-select" onchange="onPricesSort(this.value)" class="inline-flex h-10 items-center justify-between rounded-full border border-line-strong bg-surface px-4 text-sm text-fg outline-none hover:bg-surface-2 sm:ml-auto">
+              <option value="most_listed">Most listed</option>
+              <option value="highest_price">Highest price</option>
+              <option value="lowest_price">Lowest price</option>
+              <option value="top_order">Top buy order</option>
+              <option value="top_mover">Top mover</option>
+            </select>
+          </div>
+
+          <!-- Category filter pills -->
+          <div id="prices-category-pills" role="radiogroup" class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="setPricesCategory('All')" class="price-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-fg bg-fg text-bg" data-cat="All">All</button>
+            <button type="button" onclick="setPricesCategory('Valuables')" class="price-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Valuables">Valuables</button>
+            <button type="button" onclick="setPricesCategory('Combat')" class="price-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Combat">Combat</button>
+            <button type="button" onclick="setPricesCategory('Tools')" class="price-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Tools">Tools</button>
+            <button type="button" onclick="setPricesCategory('Mob drops')" class="price-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Mob drops">Mob drops</button>
+            <button type="button" onclick="setPricesCategory('Potions and books')" class="price-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Potions and books">Potions and books</button>
+            <button type="button" onclick="setPricesCategory('Food')" class="price-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Food">Food</button>
+            <button type="button" onclick="setPricesCategory('Blocks')" class="price-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Blocks">Blocks</button>
+            <button type="button" onclick="setPricesCategory('Other')" class="price-cat-pill inline-flex h-9 items-center rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 border-line-strong text-muted hover:bg-surface hover:text-fg" data-cat="Other">Other</button>
+          </div>
+        </div>
+
+        <!-- Prices Table (Official DonutStats Grid Layout) -->
+        <div class="mt-4 overflow-hidden card">
+          <div aria-hidden="true" class="prices-table-header hidden h-10 items-center border-b border-line px-5 text-xs font-medium text-subtle md:grid md:grid-cols-[minmax(0,1fr)_6.5rem_6rem_6rem_4.5rem_4.5rem_6rem_8rem] md:gap-4">
+            <span>Item</span>
+            <span class="text-right">Price</span>
+            <span class="text-right">Lowest</span>
+            <span class="text-right">Top order</span>
+            <span class="text-right">24h</span>
+            <span class="text-right">7d</span>
+            <span class="text-right">Listings</span>
+            <span class="text-right">Last 30 days</span>
+          </div>
+          <ul id="prices-table-body" class="divide-y divide-line">
+            <!-- Populated by JS -->
+          </ul>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-5 flex items-center justify-between">
+          <div id="prices-page-info" class="text-xs text-muted">1 to 20 of 191</div>
+          <div id="prices-pagination-pills" class="flex gap-1.5">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- How to read prices card -->
+        <div class="mt-8 rounded-[20px] card p-6 sm:p-8">
+          <h3 class="text-display text-xl sm:text-2xl">How to read these prices</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">Every item has two sides. The asking price is what sellers on the auction house want for one item, based on the cheapest listings so a single odd listing cannot skew it. The top buy order is what a buyer has already offered to pay, so it is the price you get if you sell right now.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- =======================================================================
+         VIEW 6: ITEM PRICE DETAIL (/prices/:item - 100% 2-Column DonutStats)
+         ======================================================================= -->
+    <div id="view-price-detail" class="view-container view-hidden">
+      <div class="container-page pt-5 sm:pt-6">
+        <!-- Breadcrumb -->
+        <nav aria-label="Breadcrumb" class="min-w-0 mb-4">
+          <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-subtle">
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Home</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('prices')">Prices</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><span id="detail-breadcrumb-item" class="truncate text-fg font-medium">Totem of Undying</span></li>
+          </ol>
+        </nav>
+
+        <!-- Two Column Hero (Mint Card on Left + Price Summary Sidebar on Right) -->
+        <div class="price-detail-grid">
+          <!-- Mint Pastel Hero Card -->
+          <div data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-mint flex min-w-0 flex-col p-5 sm:p-6 justify-between">
+            <div>
+              <div class="flex items-center gap-4">
+                <span class="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-white/55 sm:size-20">
+                  <span id="detail-hero-icon" class="relative inline-flex shrink-0" style="width: 52px; height: 52px;">
+                    <img alt="Item" width="52" height="52" class="size-full pixelated" src="/donut-assets/totem_of_undying.png">
+                  </span>
+                </span>
+                <div class="min-w-0">
+                  <p id="detail-hero-cat" class="text-[13px] font-medium text-ink/65 uppercase tracking-wide">Valuables</p>
+                  <h1 id="detail-hero-title" class="mt-1 text-display text-[1.875rem] leading-[1.05] break-words sm:text-[2.5rem]">Totem of Undying</h1>
+                </div>
+              </div>
+
+              <div class="mt-5 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+                <div class="min-w-0">
+                  <p class="text-[13px] font-medium text-ink/65">Selling Price (Lowest BIN)</p>
+                  <p id="detail-hero-asking" class="mt-1.5 text-display text-4xl leading-none sm:text-5xl">₹30.8K</p>
+                </div>
+                <dl class="flex flex-wrap gap-6 sm:pb-1">
+                  <div>
+                    <dt class="text-xs text-ink/65">24 hours</dt>
+                    <dd id="detail-stat-24h" class="mt-0.5 text-[15px] font-medium tabular-nums text-ink"><span class="inline-flex items-center gap-1 font-semibold text-rose-600"><svg class="size-3.5 inline-block text-rose-500 shrink-0 stroke-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7L17 17M17 17H7M17 17V7"/></svg> 24.6%</span></dd>
+                  </div>
+                  <div>
+                    <dt class="text-xs text-ink/65">7 days</dt>
+                    <dd id="detail-stat-7d" class="mt-0.5 text-[15px] font-medium tabular-nums text-ink"><span class="inline-flex items-center gap-1 font-semibold text-rose-600"><svg class="size-3.5 inline-block text-rose-500 shrink-0 stroke-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7L17 17M17 17H7M17 17V7"/></svg> 17.6%</span></dd>
+                  </div>
+                  <div>
+                    <dt class="text-xs text-ink/65">Top order</dt>
+                    <dd id="detail-stat-toporder" class="mt-0.5 text-[15px] font-medium tabular-nums text-ink">₹27.6K</dd>
+                  </div>
+                  <div>
+                    <dt class="text-xs text-ink/65">Listings</dt>
+                    <dd id="detail-stat-listings" class="mt-0.5 text-[15px] font-medium tabular-nums text-ink">3,795</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+
+            <!-- Time Range Selector & Interactive Canvas Chart -->
+            <div class="mt-6 pt-4 border-t border-ink/15">
+              <div class="flex items-center justify-between mb-2">
+                <span id="detail-chart-caption" class="text-xs text-ink/75 font-medium">Selling Price · Live tracked on Priyo SMP</span>
+                <div class="inline-flex rounded-full bg-white/40 p-0.5 text-xs font-semibold">
+                  <button type="button" onclick="setMintChartRange(1)" class="range-pill px-2.5 py-1 rounded-full text-ink" data-days="1">24H</button>
+                  <button type="button" onclick="setMintChartRange(7)" class="range-pill px-2.5 py-1 rounded-full bg-ink text-white" data-days="7">7D</button>
+                  <button type="button" onclick="setMintChartRange(30)" class="range-pill px-2.5 py-1 rounded-full text-ink" data-days="30">30D</button>
+                  <button type="button" onclick="setMintChartRange(365)" class="range-pill px-2.5 py-1 rounded-full text-ink" data-days="365">1Y</button>
+                </div>
+              </div>
+              <div class="mint-chart-container">
+                <canvas id="detail-mint-canvas" class="w-full h-full"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Summary Sidebar -->
+          <section aria-labelledby="summary-title" class="flex min-w-0 flex-col card p-5 sm:p-6 lg:self-start">
+            <h2 id="summary-title" class="text-[15px] font-semibold text-fg">Price summary</h2>
+            <dl class="mt-3 divide-y divide-line">
+              <div class="flex min-h-9 items-center justify-between gap-4 py-1.5 text-sm"><dt class="text-muted">Selling price (Lowest BIN)</dt><dd id="ps-asking" class="font-medium text-fg tabular-nums">₹30.8K</dd></div>
+              <div class="flex min-h-9 items-center justify-between gap-4 py-1.5 text-sm"><dt class="text-muted">Cheapest listing</dt><dd id="ps-cheapest" class="font-medium text-fg tabular-nums">₹30.8K</dd></div>
+              <div class="flex min-h-9 items-center justify-between gap-4 py-1.5 text-sm"><dt class="text-muted">Median listing</dt><dd id="ps-median" class="font-medium text-fg tabular-nums">₹48.3K</dd></div>
+              <div class="flex min-h-9 items-center justify-between gap-4 py-1.5 text-sm"><dt class="text-muted">Best buy order</dt><dd id="ps-bestorder" class="font-medium text-fg tabular-nums">₹27.6K</dd></div>
+              <div class="flex min-h-9 items-center justify-between gap-4 py-1.5 text-sm"><dt class="text-muted">Spread</dt><dd id="ps-spread" class="font-medium text-fg tabular-nums">₹3.2K</dd></div>
+              <div class="flex min-h-9 items-center justify-between gap-4 py-1.5 text-sm"><dt class="text-muted">Units listed</dt><dd id="ps-units" class="font-medium text-fg tabular-nums">3,795</dd></div>
+              <div class="flex min-h-9 items-center justify-between gap-4 py-1.5 text-sm"><dt class="text-muted">Open buy orders</dt><dd id="ps-openorders" class="font-medium text-fg tabular-nums">276</dd></div>
+              <div class="flex min-h-9 items-center justify-between gap-4 py-1.5 text-sm"><dt class="text-muted">Units wanted</dt><dd id="ps-unitswanted" class="font-medium text-fg tabular-nums">832.7K</dd></div>
+              <div class="flex min-h-9 items-center justify-between gap-4 py-1.5 text-sm"><dt class="text-muted">Wanted in orders</dt><dd id="ps-wantedbudget" class="font-medium text-fg tabular-nums">₹17.2B</dd></div>
+              <div class="flex min-h-9 items-center justify-between gap-4 py-1.5 text-sm"><dt class="text-muted">Delivered to orders, 24h</dt><dd id="ps-delivered" class="font-medium text-fg tabular-nums">919.2K</dd></div>
+              <div class="flex min-h-9 items-center justify-between gap-4 py-1.5 text-sm"><dt class="text-muted">Paid out by orders, 24h</dt><dd id="ps-paidout" class="font-medium text-fg tabular-nums">₹24.0B</dd></div>
+            </dl>
+          </section>
+        </div>
+
+        <!-- Two Tables: Cheapest listings & Best buy orders -->
+        <div class="mt-8 price-subtables-grid">
+          <!-- Left: Cheapest listings -->
+          <div class="card overflow-hidden">
+            <div class="flex min-h-14 items-center justify-between gap-3 border-b border-line px-4 py-2.5 sm:px-5">
+              <div class="min-w-0">
+                <h3 class="text-[15px] font-semibold text-fg">Cheapest listings right now</h3>
+                <p class="text-xs text-muted">Asks on the auction house, lowest unit price first</p>
+              </div>
+              <button onclick="navigateTo('auction')" class="inline-flex items-center gap-1.5 rounded-full border border-line-strong px-3 py-1 text-xs font-medium text-fg hover:bg-surface-2">
+                All listings →
+              </button>
+            </div>
+            <ul id="detail-cheapest-table" class="divide-y divide-line text-sm">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+
+          <!-- Right: Best buy orders -->
+          <div class="card overflow-hidden">
+            <div class="flex min-h-14 items-center justify-between gap-3 border-b border-line px-4 py-2.5 sm:px-5">
+              <div class="min-w-0">
+                <h3 class="text-[15px] font-semibold text-fg">Best buy orders</h3>
+                <p class="text-xs text-muted">Open buy orders, highest price first</p>
+              </div>
+              <button onclick="navigateTo('orders')" class="inline-flex items-center gap-1.5 rounded-full border border-line-strong px-3 py-1 text-xs font-medium text-fg hover:bg-surface-2">
+                All orders →
+              </button>
+            </div>
+            <ul id="detail-orders-table" class="divide-y divide-line text-sm">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Related Items -->
+        <section class="mt-8 mb-10">
+          <h3 class="text-display text-lg mb-3">Related items</h3>
+          <div id="detail-related-items" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- =======================================================================
+         VIEW 7: THE ECONOMY (/economy)
+         ======================================================================= -->
+    <div id="view-economy" class="view-container view-hidden">
+      <header class="container-page pt-5 pb-6 sm:pt-6">
+        <nav aria-label="Breadcrumb" class="min-w-0 mb-4">
+          <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-subtle">
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Home</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><span aria-current="page" class="truncate text-fg font-medium">Economy</span></li>
+          </ol>
+        </nav>
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+          <div class="max-w-3xl min-w-0">
+            <h1 class="text-display text-[1.875rem] leading-[1.05] sm:text-[2.5rem]">The Priyo SMP economy</h1>
+            <div class="mt-2 text-[15px] leading-relaxed text-muted">Where the server's money sits.</div>
+          </div>
+        </div>
+
+        <!-- 6 Colorful Pastel Cards (Exact DonutStats Colors) -->
+        <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          <div data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-pink flex min-w-0 flex-col p-4 sm:p-5 col-span-2 lg:col-span-1">
+            <p class="text-[13px] font-medium text-ink/65">Money on the baltop</p>
+            <p id="eco-baltop" class="mt-auto pt-4 text-display text-[2rem] leading-none sm:text-[2.5rem]">₹8.27B</p>
+            <p class="mt-2 text-xs text-ink/65">Across 8,463 ranked players</p>
+          </div>
+
+          <div data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-lilac flex min-w-0 flex-col p-4 sm:p-5">
+            <p class="text-[13px] font-medium text-ink/65">Held by the top 10</p>
+            <p id="eco-top10" class="mt-auto pt-4 text-display text-[2rem] leading-none sm:text-[2.5rem]">₹2.82B</p>
+            <p class="mt-2 text-xs text-ink/65">34.1% of all ranked money</p>
+          </div>
+
+          <div class="flex min-w-0 flex-col card p-4 sm:p-5">
+            <p class="text-[13px] font-medium text-muted">Median balance</p>
+            <p id="eco-median" class="mt-auto pt-4 text-display text-[2rem] leading-none sm:text-[2.5rem]">₹45.2K</p>
+            <p class="mt-2 text-xs text-subtle">Half the baltop holds more</p>
+          </div>
+
+          <div data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-butter flex min-w-0 flex-col p-4 sm:p-5">
+            <p class="text-[13px] font-medium text-ink/65">Money in buy orders</p>
+            <p id="eco-orders" class="mt-auto pt-4 text-display text-[2rem] leading-none sm:text-[2.5rem]">₹809.9M</p>
+            <p class="mt-2 text-xs text-ink/65">Waiting in active orders</p>
+          </div>
+
+          <div data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-mint flex min-w-0 flex-col p-4 sm:p-5">
+            <p class="text-[13px] font-medium text-ink/65">Paid out by orders</p>
+            <p id="eco-paidout" class="mt-auto pt-4 text-display text-[2rem] leading-none sm:text-[2.5rem]">₹18.0M</p>
+            <p class="mt-2 text-xs text-ink/65">In the last 24 hours</p>
+          </div>
+
+          <div class="flex min-w-0 flex-col card p-4 sm:p-5">
+            <p class="text-[13px] font-medium text-muted">Auction liquid value</p>
+            <p id="eco-liquid" class="mt-auto pt-4 text-display text-[2rem] leading-none sm:text-[2.5rem]">₹490.5M</p>
+            <p class="mt-2 text-xs text-subtle">What orders pay for 1,089 items</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Wealth Distribution Section -->
+      <section class="container-page mt-4 mb-10">
+        <h2 class="text-display text-xl mb-4">Who holds the money</h2>
+        <div class="grid gap-4 lg:grid-cols-2">
+          <!-- Concentration Progress Bars -->
+          <div class="card p-6">
+            <h3 class="text-sm font-semibold text-fg mb-4">Share of total wealth</h3>
+            <div class="space-y-4 text-sm">
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-muted">Top 10 players</span><span class="font-medium text-fg">34.1% (₹2.82B)</span></div>
+                <div class="h-2 rounded-full bg-surface-2 overflow-hidden"><div class="h-full bg-accent rounded-full" style="width: 34.1%;"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-muted">Top 50 players</span><span class="font-medium text-fg">22.8% (₹1.89B)</span></div>
+                <div class="h-2 rounded-full bg-surface-2 overflow-hidden"><div class="h-full bg-warning rounded-full" style="width: 22.8%;"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-muted">Top 200 players</span><span class="font-medium text-fg">25.3% (₹2.09B)</span></div>
+                <div class="h-2 rounded-full bg-surface-2 overflow-hidden"><div class="h-full bg-success rounded-full" style="width: 25.3%;"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-muted">Remaining 8,200+ players</span><span class="font-medium text-fg">17.8% (₹1.47B)</span></div>
+                <div class="h-2 rounded-full bg-surface-2 overflow-hidden"><div class="h-full bg-muted rounded-full" style="width: 17.8%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Richest Players Preview Table -->
+          <div class="card overflow-hidden">
+            <div class="px-5 py-3 border-b border-line flex justify-between items-center">
+              <h3 class="text-sm font-semibold text-fg">Richest players</h3>
+              <button onclick="navigateTo('rankings')" class="text-xs text-muted hover:text-fg font-medium">Full baltop →</button>
+            </div>
+            <ul id="eco-richest-list" class="divide-y divide-line text-sm">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- =======================================================================
+         VIEW 8: FLIPS & ARBITRAGE (/flips - Exact 1:1 DonutStats Layout)
+         ======================================================================= -->
+    <div id="view-flips" class="view-container view-hidden">
+      <header class="container-page pt-5 pb-6 sm:pt-6">
+        <nav aria-label="Breadcrumb" class="min-w-0 mb-4">
+          <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-subtle">
+            <li class="flex min-w-0 items-center gap-2">
+              <a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Home</a>
+              <span aria-hidden="true" class="text-line-strong">/</span>
+            </li>
+            <li class="flex min-w-0 items-center gap-2">
+              <span aria-current="page" class="truncate text-fg font-medium">Flips</span>
+            </li>
+          </ol>
+        </nav>
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+          <div class="max-w-3xl min-w-0">
+            <div class="mb-1.5 text-[13px] font-medium text-muted"><span>Updated just now</span></div>
+            <h1 class="text-display text-[1.875rem] leading-[1.05] sm:text-[2.5rem]">Flips</h1>
+            <div class="mt-2 text-[15px] leading-relaxed text-muted">Buy on /ah, sell to /orders, keep the difference.</div>
+          </div>
+          <div class="flex shrink-0 flex-wrap items-center gap-2">
+            <a onclick="navigateTo('auction')" class="inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-colors duration-150 border border-line-strong bg-surface text-fg hover:bg-surface-2 h-8 px-3.5 text-[13px] cursor-pointer">
+              Auction house
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4 shrink-0"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </a>
+            <a onclick="navigateTo('orders')" class="inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-colors duration-150 border border-line-strong bg-surface text-fg hover:bg-surface-2 h-8 px-3.5 text-[13px] cursor-pointer">
+              Buy orders
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4 shrink-0"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 4 Metric Cards (DonutStats Grid) -->
+        <div class="mt-5">
+          <dl class="grid grid-cols-2 gap-px border-y border-line bg-line lg:grid-cols-4">
+            <div class="bg-bg py-4 sm:py-5 lg:pl-6 lg:first:pl-0">
+              <dt class="text-[13px] text-muted">Flips right now</dt>
+              <dd id="flips-stat-total" class="mt-1.5 text-display text-[1.75rem] leading-none sm:text-[2.25rem] xl:text-[2.5rem]">26</dd>
+            </div>
+            <div class="bg-bg py-4 pl-4 sm:py-5 sm:pl-6">
+              <dt class="text-[13px] text-muted">Profit on the table</dt>
+              <dd id="flips-stat-profit" class="mt-1.5 text-display text-[1.75rem] leading-none sm:text-[2.25rem] xl:text-[2.5rem] text-success">₹58.4M</dd>
+            </div>
+            <div class="bg-bg py-4 sm:py-5 lg:pl-6 lg:first:pl-0">
+              <dt class="text-[13px] text-muted">Auction to orders</dt>
+              <dd id="flips-stat-direct" class="mt-1.5 text-display text-[1.75rem] leading-none sm:text-[2.25rem] xl:text-[2.5rem]">16</dd>
+            </div>
+            <div class="bg-bg py-4 pl-4 sm:py-5 sm:pl-6">
+              <dt class="text-[13px] text-muted">Crafting & Snipes</dt>
+              <dd id="flips-stat-craft" class="mt-1.5 text-display text-[1.75rem] leading-none sm:text-[2.25rem] xl:text-[2.5rem]">10</dd>
+            </div>
+          </dl>
+        </div>
+      </header>
+
+      <section aria-labelledby="flips-title" class="container-page pb-12">
+        <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+          <div class="max-w-2xl min-w-0">
+            <h2 id="flips-title" class="text-display text-[1.375rem] leading-tight sm:text-[1.625rem]">Flips</h2>
+          </div>
+          <div class="shrink-0">
+            <p id="flips-count-label" aria-live="polite" class="text-[13px] text-subtle tabular-nums">26 flips</p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center gap-2">
+          <!-- Search flips by item -->
+          <div class="relative flex h-10 items-center rounded-full border border-line-strong bg-surface transition-[border-color,box-shadow] duration-150 focus-within:border-fg focus-within:ring-4 focus-within:ring-fg/8 min-w-48 flex-1 sm:max-w-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search pointer-events-none absolute left-3.5 size-4 text-subtle" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+            <label for="flips-search-input" class="sr-only">Search flips by item</label>
+            <input id="flips-search-input" placeholder="Search items" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="search" class="h-full w-full min-w-0 bg-transparent pr-10 pl-10 text-base text-fg outline-none placeholder:text-subtle sm:text-sm" type="search" oninput="handleFlipsSearch(this.value)">
+          </div>
+
+          <!-- Kind of flip radio group -->
+          <div class="flex flex-wrap items-center gap-2 sm:ml-auto">
+            <div role="radiogroup" aria-label="Kind of flip" class="scrollbar-none inline-flex items-center gap-0.5 overflow-x-auto rounded-full bg-surface-2 p-1 max-w-full shrink-0">
+              <button type="button" onclick="setFlipsKind('all')" id="flip-kind-all" class="flip-kind-btn inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full font-medium whitespace-nowrap transition-colors duration-150 h-8 px-3 text-xs bg-fg text-bg">All</button>
+              <button type="button" onclick="setFlipsKind('direct')" id="flip-kind-direct" class="flip-kind-btn inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full font-medium whitespace-nowrap transition-colors duration-150 h-8 px-3 text-xs text-muted hover:text-fg">Auction to orders</button>
+              <button type="button" onclick="setFlipsKind('snipe')" id="flip-kind-snipe" class="flip-kind-btn inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full font-medium whitespace-nowrap transition-colors duration-150 h-8 px-3 text-xs text-muted hover:text-fg">Market snipes</button>
+              <button type="button" onclick="setFlipsKind('craft')" id="flip-kind-craft" class="flip-kind-btn inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full font-medium whitespace-nowrap transition-colors duration-150 h-8 px-3 text-xs text-muted hover:text-fg">Crafting</button>
+            </div>
+
+            <!-- Sort flips dropdown -->
+            <div class="relative">
+              <button id="flips-sort-toggle" onclick="toggleFlipsSortMenu()" type="button" class="inline-flex h-10 items-center justify-between gap-2 rounded-full border border-line-strong bg-surface px-4 text-left text-sm text-fg transition-colors outline-none hover:bg-surface-2 sm:w-52 w-auto shrink-0" aria-label="Sort flips">
+                <span class="flex min-w-0 items-center gap-2.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-down size-4 shrink-0 text-subtle" aria-hidden="true"><path d="m21 16-4 4-4-4"></path><path d="M17 20V4"></path><path d="m3 8 4-4 4 4"></path><path d="M7 4v16"></path></svg>
+                  <span class="truncate" id="flips-sort-selected">Most profit</span>
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down size-4 shrink-0 text-subtle" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+              </button>
+              <div id="flips-sort-dropdown" class="hidden absolute right-0 mt-2 w-48 rounded-2xl border border-line-strong bg-surface-2 p-1.5 shadow-xl z-30">
+                <button onclick="setFlipsSort('profit')" class="w-full text-left px-3 py-2 text-xs font-medium rounded-xl hover:bg-surface text-fg">Most profit</button>
+                <button onclick="setFlipsSort('roi')" class="w-full text-left px-3 py-2 text-xs font-medium rounded-xl hover:bg-surface text-fg">Highest margin (ROI)</button>
+                <button onclick="setFlipsSort('spend')" class="w-full text-left px-3 py-2 text-xs font-medium rounded-xl hover:bg-surface text-fg">Lowest spend</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flips Table Card Container (Exact DonutStats Layout) -->
+        <div class="mt-4 overflow-hidden rounded-[20px] border border-line bg-surface">
+          <!-- Desktop Table Header -->
+          <div aria-hidden="true" class="flips-grid-header">
+            <span>Item</span>
+            <span>How</span>
+            <span class="text-right">You spend</span>
+            <span class="text-right">Orders pay</span>
+            <span class="text-right">Profit</span>
+          </div>
+
+          <!-- Flips Rows List -->
+          <div id="flips-table-body" class="divide-y divide-line">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+        <!-- =======================================================================
+         VIEW 9: MULTI-MOB SPAWNER CALCULATOR (/calculator)
+         ======================================================================= -->
+    <div id="view-calculator" class="view-container view-hidden">
+      <header class="container-page pt-5 pb-6 sm:pt-6">
+        <nav aria-label="Breadcrumb" class="min-w-0 mb-4">
+          <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-subtle">
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Home</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><span class="truncate text-subtle">Tools</span><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><span id="calc-breadcrumb-title" aria-current="page" class="truncate text-fg font-medium">Skeleton Spawner Calculator</span></li>
+          </ol>
+        </nav>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 id="calc-page-title" class="text-display text-[1.875rem] leading-[1.05] sm:text-[2.5rem]">Skeleton Spawner Calculator</h1>
+            <div id="calc-page-desc" class="mt-2 text-[15px] leading-relaxed text-muted">Calculate AFK mob grinding profits from bone and bone meal sales on Priyo SMP.</div>
+          </div>
+        </div>
+
+        <!-- Spawner Mob Selector Pills Bar -->
+        <div class="mt-6 flex flex-wrap items-center gap-2 border-b border-line pb-4">
+          <span class="text-xs font-semibold uppercase tracking-wider text-muted mr-1">Select Spawner:</span>
+          <button type="button" onclick="selectSpawner('skeleton')" id="spawner-pill-skeleton" class="spawner-pill active inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border border-line-strong bg-surface text-fg hover:bg-surface-2 transition-all">
+            <img src="/donut-assets/skeleton_skull.png" alt="Skeleton" class="size-4 pixelated object-contain">
+            <span>Skeleton</span>
+          </button>
+          <button type="button" onclick="selectSpawner('blaze')" id="spawner-pill-blaze" class="spawner-pill inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border border-line-strong bg-surface text-fg hover:bg-surface-2 transition-all">
+            <img src="/donut-assets/blaze_rod.png" alt="Blaze" class="size-4 pixelated object-contain">
+            <span>Blaze</span>
+          </button>
+          <button type="button" onclick="selectSpawner('iron_golem')" id="spawner-pill-iron_golem" class="spawner-pill inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border border-line-strong bg-surface text-fg hover:bg-surface-2 transition-all">
+            <img src="/donut-assets/iron_ingot.png" alt="Iron Golem" class="size-4 pixelated object-contain">
+            <span>Iron Golem</span>
+          </button>
+          <button type="button" onclick="selectSpawner('creeper')" id="spawner-pill-creeper" class="spawner-pill inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border border-line-strong bg-surface text-fg hover:bg-surface-2 transition-all">
+            <img src="/donut-assets/gunpowder.png" alt="Creeper" class="size-4 pixelated object-contain">
+            <span>Creeper</span>
+          </button>
+          <button type="button" onclick="selectSpawner('zombie')" id="spawner-pill-zombie" class="spawner-pill inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border border-line-strong bg-surface text-fg hover:bg-surface-2 transition-all">
+            <img src="/donut-assets/rotten_flesh.png" alt="Zombie" class="size-4 pixelated object-contain">
+            <span>Zombie</span>
+          </button>
+          <button type="button" onclick="selectSpawner('pigman')" id="spawner-pill-pigman" class="spawner-pill inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border border-line-strong bg-surface text-fg hover:bg-surface-2 transition-all">
+            <img src="/donut-assets/gold_ingot.png" alt="Pigman" class="size-4 pixelated object-contain">
+            <span>Pigman</span>
+          </button>
+          <button type="button" onclick="selectSpawner('spider')" id="spawner-pill-spider" class="spawner-pill inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border border-line-strong bg-surface text-fg hover:bg-surface-2 transition-all">
+            <img src="/donut-assets/spider_eye.png" alt="Spider" class="size-4 pixelated object-contain">
+            <span>Spider</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="container-page profile-layout-grid mt-4 mb-10 grid gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
+        <!-- Pastel Interactive Card -->
+        <div id="calc-hero-card" data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-peach p-6 sm:p-8 flex flex-col justify-between transition-colors duration-300">
+          <div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <img id="calc-mob-avatar" src="/donut-assets/skeleton_skull.png" alt="Mob" class="size-9 pixelated object-contain drop-shadow-sm">
+                <div>
+                  <h2 class="text-display text-2xl font-bold">AFK Yield Estimator</h2>
+                  <p id="calc-mob-subtitle" class="text-xs font-medium text-ink/75">Skeleton Spawner • Bone drops</p>
+                </div>
+              </div>
+              <span id="calc-drop-badge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-ink/10 text-ink">Primary: Bone</span>
+            </div>
+
+            <!-- Preset buttons -->
+            <div class="mt-6 flex flex-wrap items-center gap-2">
+              <span class="text-xs font-semibold text-ink/70">Presets:</span>
+              <button type="button" onclick="setSpawnerCount(1)" class="px-2.5 py-1 rounded-md text-xs font-bold bg-ink/10 hover:bg-ink/20 text-ink transition-colors cursor-pointer">1 Spawner</button>
+              <button type="button" onclick="setSpawnerCount(5)" class="px-2.5 py-1 rounded-md text-xs font-bold bg-ink/10 hover:bg-ink/20 text-ink transition-colors cursor-pointer">5 Spawners</button>
+              <button type="button" onclick="setSpawnerCount(10)" class="px-2.5 py-1 rounded-md text-xs font-bold bg-ink/10 hover:bg-ink/20 text-ink transition-colors cursor-pointer">10 Spawners</button>
+              <button type="button" onclick="setSpawnerCount(25)" class="px-2.5 py-1 rounded-md text-xs font-bold bg-ink/10 hover:bg-ink/20 text-ink transition-colors cursor-pointer">25 Spawners</button>
+              <button type="button" onclick="setSpawnerCount(50)" class="px-2.5 py-1 rounded-md text-xs font-bold bg-ink/10 hover:bg-ink/20 text-ink transition-colors cursor-pointer">50 Spawners</button>
+            </div>
+
+            <div class="mt-6 space-y-5">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label for="calc-spawner-slider" class="text-xs font-semibold text-ink/75">Spawner Count</label>
+                  <span id="calc-spawner-count-lbl" class="text-sm font-bold text-ink">10</span>
+                </div>
+                <input id="calc-spawner-slider" type="range" min="1" max="100" value="10" oninput="updateCalculatorMath()" class="w-full accent-ink cursor-pointer">
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label for="calc-hours-slider" class="text-xs font-semibold text-ink/75">AFK Hours per Day</label>
+                  <span id="calc-hours-lbl" class="text-sm font-bold text-ink">8h</span>
+                </div>
+                <input id="calc-hours-slider" type="range" min="1" max="24" value="8" oninput="updateCalculatorMath()" class="w-full accent-ink cursor-pointer">
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 pt-6 border-t border-ink/15">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-xs font-medium text-ink/75">Estimated Daily Revenue</p>
+                <p id="calc-daily-rev" class="text-display text-3xl sm:text-4xl font-extrabold mt-1">₹614.4K</p>
+                <p id="calc-price-note" class="text-xs text-ink/75 mt-1">Bones sell at ₹32/ea on /order</p>
+              </div>
+              <div class="border-l border-ink/15 pl-4">
+                <p class="text-xs font-medium text-ink/75">Estimated Yield</p>
+                <p id="calc-daily-yield" class="text-display text-2xl sm:text-3xl font-bold mt-1">19.2K items</p>
+                <p id="calc-hourly-rev" class="text-xs text-ink/75 mt-1">~₹76.8K / hour AFK</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar: Market prices -->
+        <div class="card p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <img id="calc-sidebar-icon" src="/donut-assets/bone.png" alt="Drop" class="size-5 pixelated object-contain">
+              <h3 id="calc-market-heading" class="text-sm font-semibold text-fg">Current Bone Market</h3>
+            </div>
+            <div class="mt-4 space-y-3 text-sm">
+              <div class="flex justify-between py-2 border-b border-line">
+                <span id="calc-label-ah" class="text-muted">Bone /ah floor</span>
+                <span id="calc-val-ah" class="font-medium text-fg">₹35</span>
+              </div>
+              <div class="flex justify-between py-2 border-b border-line">
+                <span id="calc-label-order" class="text-muted">Bone /order top buy</span>
+                <span id="calc-val-order" class="font-medium text-emerald-500 font-semibold">₹32</span>
+              </div>
+              <div class="flex justify-between py-2 border-b border-line">
+                <span id="calc-label-sec" class="text-muted">Bone Meal /ah floor</span>
+                <span id="calc-val-sec" class="font-medium text-fg">₹12</span>
+              </div>
+              <div class="flex justify-between py-2 border-b border-line">
+                <span class="text-muted">Estimated Drops / Spawner</span>
+                <span id="calc-val-spawner-rate" class="font-medium text-fg">240 items / hr</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 space-y-2">
+            <button id="calc-copy-order-btn" onclick="copyCurrentOrderCommand()" class="w-full py-2.5 rounded-full bg-fg text-bg text-sm font-semibold hover:bg-fg/90 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              <span>Copy In-Game /order Command</span>
+            </button>
+            <p class="text-[11px] text-center text-muted">Paste in Minecraft chat with <kbd class="px-1 py-0.5 rounded bg-surface border border-line text-xs font-mono">Ctrl+V</kbd></p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- =======================================================================
+         VIEW 10: PLAYER PROFILE VIEW (/player/:username - 100% DonutStats 1:1)
+         ======================================================================= -->
+    <div id="view-player" class="view-container view-hidden">
+      <div class="container-page pt-5 sm:pt-6">
+        <nav aria-label="Breadcrumb" class="min-w-0 mb-4">
+          <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-subtle">
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Home</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Players</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><span id="player-profile-breadcrumb" class="truncate text-fg font-medium">Achuuzz</span></li>
+          </ol>
+        </nav>
+
+        <!-- 2-Column DonutStats Layout -->
+        <div class="player-profile-grid">
+          <!-- Left: Dedicated Vertical Lilac Card with 3D Standing Character -->
+          <div id="player-profile-card-lilac" class="player-lilac-card group" title="Drag to rotate 3D character">
+            <canvas id="player-skin-3d-canvas" class="player-skin-3d-canvas"></canvas>
+            <img id="player-profile-standing-img" alt="Player skin" class="player-standing-model hidden" src="/donut-assets/steve_skin.png">
+            <span class="player-rotate-pill" id="player-rotate-pill">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5">
+                <path d="m15.194 13.707 3.814 1.86-1.86 3.814"></path>
+                <path d="M16.47214 7.52786 A 5 10 0 1 0 13 21.79796"></path>
+                <path d="M21.79796 11 A 10 5 0 1 0 19 15.57071"></path>
+              </svg>
+              Drag to rotate 3D
+            </span>
+          </div>
+
+          <!-- Right: Player Header, Lifetime Stats, History & Standings -->
+          <div class="min-w-0 space-y-6">
+            <!-- Header Row -->
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <h1 id="player-profile-name" class="text-display text-4xl sm:text-5xl font-extrabold tracking-tight text-white">Achuuzz</h1>
+                <div class="mt-2 flex flex-wrap items-center gap-2 text-xs text-subtle">
+                  <span class="inline-flex items-center gap-1.5"><span class="online-pulse-dot"></span> Online now</span>
+                  <span>•</span>
+                  <span>Stats updated just now</span>
+                  <span>•</span>
+                  <span>Tracked since Oct 9, 2026</span>
+                </div>
+                <!-- Badges -->
+                <div class="mt-3 flex flex-wrap gap-2">
+                  <span id="player-badge-money" class="inline-flex items-center rounded-full bg-surface-2 px-3 py-1 text-xs font-semibold text-fg border border-line">#1 Money</span>
+                  <span id="player-badge-playtime" class="inline-flex items-center rounded-full bg-surface-2 px-3 py-1 text-xs font-semibold text-fg border border-line">#16 Playtime</span>
+                </div>
+              </div>
+
+              <!-- Top Right Action Buttons -->
+              <div class="flex shrink-0 flex-wrap items-center gap-2">
+                <button id="btn-sync-player-stats" onclick="syncLivePlayerStats()" title="Bot will run /stats in Priyo SMP chat to query live numbers" class="inline-flex items-center gap-1.5 rounded-full border border-line-strong bg-surface px-3.5 py-1.5 text-xs font-medium text-fg hover:bg-surface-2 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 text-emerald-400"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                  <span>Sync in-game stats</span>
+                </button>
+                <button onclick="navigateTo('auction')" class="inline-flex items-center gap-1.5 rounded-full border border-line-strong bg-surface px-3.5 py-1.5 text-xs font-medium text-fg hover:bg-surface-2">
+                  Listed auctions
+                </button>
+                <button onclick="navigateTo('orders')" class="inline-flex items-center gap-1.5 rounded-full border border-line-strong bg-surface px-3.5 py-1.5 text-xs font-medium text-fg hover:bg-surface-2">
+                  Listed orders
+                </button>
+                <button onclick="copyCommand(window.location.href)" class="inline-flex items-center gap-1.5 rounded-full border border-line-strong bg-surface px-3.5 py-1.5 text-xs font-medium text-fg hover:bg-surface-2">
+                  Copy link
+                </button>
+              </div>
+            </div>
+
+            <!-- Meta Strip -->
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-subtle border-y border-line py-2.5">
+              <span>Bounty <strong id="player-profile-bounty" class="text-fg">₹108.00</strong></span>
+              <span>Total views <strong id="player-profile-views" class="text-fg">--</strong></span>
+              <span>This month <strong id="player-profile-views-month" class="text-fg">--</strong></span>
+              <span>UUID <code id="player-profile-uuid" class="text-fg font-mono">c6561f67</code></span>
+            </div>
+
+            <!-- Bio Summary -->
+            <p id="player-profile-bio" class="text-xs leading-relaxed text-muted">
+              Achuuzz is #1 on the Priyo SMP baltop with ₹1.12B, in the top 0.0% of 8,463 players. They also rank #16 for playtime. They have 428.5h of playtime, with 351 kills and 109 deaths (K/D 3.22). Their balance is up ₹157.00M over the last 30 days.
+            </p>
+
+            <!-- Lifetime Stats Section -->
+            <div>
+              <h2 class="text-display text-xl font-bold mb-3">Lifetime stats</h2>
+              <div class="grid gap-3 grid-cols-2 sm:grid-cols-4">
+                <!-- Money Card (Wide Pink) -->
+                <div data-block="" class="rounded-[20px] text-ink selection:bg-ink selection:text-white bg-pink p-5 col-span-2 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-bold uppercase tracking-wider text-ink/75">Money</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right size-4 opacity-60"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+                    </div>
+                    <p id="player-stat-money-val" class="text-display text-4xl sm:text-5xl font-extrabold mt-2">₹1.12B</p>
+                    <p class="text-xs text-ink/70 mt-1 flex items-center gap-1 font-medium"><svg class="size-3 inline-block text-emerald-500 shrink-0 stroke-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg> 45.0% 30d</p>
+                  </div>
+                  <div class="mt-4 flex items-end justify-between border-t border-ink/15 pt-2">
+                    <span id="player-stat-money-rank" class="text-xs font-semibold text-ink/75">#1 on the leaderboard</span>
+                    <canvas id="player-sparkline-money" width="80" height="24"></canvas>
+                  </div>
+                </div>
+
+                <!-- Playtime Card -->
+                <div class="card p-5 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-medium text-muted">Playtime</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock size-4 text-subtle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <p id="player-stat-playtime-val" class="text-display text-3xl font-bold mt-2">429h</p>
+                    <p class="text-xs text-emerald-400 mt-1 flex items-center gap-1 font-medium"><svg class="size-3 inline-block text-emerald-500 shrink-0 stroke-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg> 9.8% 30d</p>
+                  </div>
+                  <div class="mt-3 flex items-end justify-between border-t border-line pt-2">
+                    <span id="player-stat-playtime-rank" class="text-[11px] text-subtle">#16 on leaderboard</span>
+                    <canvas id="player-sparkline-play" width="60" height="20"></canvas>
+                  </div>
+                </div>
+
+                <!-- Shards Card -->
+                <div class="card p-5 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-medium text-muted">Shards</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gem size-4 text-subtle"><path d="M6 3h12l4 6-10 13L2 9Z"></path></svg>
+                    </div>
+                    <p id="player-stat-shards-val" class="text-display text-3xl font-bold mt-2">737</p>
+                    <p class="text-xs text-emerald-400 mt-1 flex items-center gap-1 font-medium"><svg class="size-3 inline-block text-emerald-500 shrink-0 stroke-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg> 1.6% 30d</p>
+                  </div>
+                  <div class="mt-3 flex items-end justify-between border-t border-line pt-2">
+                    <span class="text-[11px] text-subtle">Server points</span>
+                    <canvas id="player-sparkline-shards" width="60" height="20"></canvas>
+                  </div>
+                </div>
+
+                <!-- Kills Card -->
+                <div class="card p-5 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-medium text-muted">Kills</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords size-4 text-subtle"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"></polyline><line x1="13" y1="19" x2="19" y2="13"></line></svg>
+                    </div>
+                    <p id="player-stat-kills-val" class="text-display text-3xl font-bold mt-2">351</p>
+                    <p class="text-xs text-emerald-400 mt-1 flex items-center gap-1 font-medium"><svg class="size-3 inline-block text-emerald-500 shrink-0 stroke-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg> 1.3% 30d</p>
+                  </div>
+                  <div class="mt-3 flex items-end justify-between border-t border-line pt-2">
+                    <span id="player-stat-kd" class="text-[11px] text-subtle">K/D: 0.15</span>
+                    <canvas id="player-sparkline-kills" width="60" height="20"></canvas>
+                  </div>
+                </div>
+
+                <!-- Deaths Card -->
+                <div class="card p-5 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-medium text-muted">Deaths</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-skull size-4 text-subtle"><circle cx="9" cy="12" r="1"></circle><circle cx="15" cy="12" r="1"></circle><path d="M8 20v2h8v-2"></path><path d="m12.5 17-.5-1-.5 1h1z"></path><path d="M16 20a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20"></path></svg>
+                    </div>
+                    <p id="player-stat-deaths-val" class="text-display text-3xl font-bold mt-2">109</p>
+                    <p class="text-xs text-muted mt-1">Total recorded</p>
+                  </div>
+                  <div class="mt-3 flex items-end justify-between border-t border-line pt-2">
+                    <span class="text-[11px] text-subtle">PVP deaths</span>
+                    <canvas id="player-sparkline-deaths" width="60" height="20"></canvas>
+                  </div>
+                </div>
+
+                <!-- Blocks broken -->
+                <div class="card p-5 flex flex-col justify-between">
+                  <div>
+                    <span class="text-xs font-medium text-muted">Blocks broken</span>
+                    <p id="player-stat-broken-val" class="text-display text-3xl font-bold mt-2">22.45K</p>
+                  </div>
+                  <div class="mt-3 border-t border-line pt-2 text-[11px] text-subtle">Lifetime mined</div>
+                </div>
+
+                <!-- Blocks placed -->
+                <div class="card p-5 flex flex-col justify-between">
+                  <div>
+                    <span class="text-xs font-medium text-muted">Blocks placed</span>
+                    <p id="player-stat-placed-val" class="text-display text-3xl font-bold mt-2">14.52K</p>
+                  </div>
+                  <div class="mt-3 border-t border-line pt-2 text-[11px] text-subtle">Lifetime built</div>
+                </div>
+
+                <!-- Mob Kills Card -->
+                <div class="card p-5 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-medium text-muted">Mob kills</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crosshair size-4 text-subtle"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>
+                    </div>
+                    <p id="player-stat-mobkills-val" class="text-display text-3xl font-bold mt-2">809</p>
+                    <p class="text-xs text-emerald-400 mt-1 flex items-center gap-1 font-medium"><svg class="size-3 inline-block text-emerald-500 shrink-0 stroke-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg> 1.7% 30d</p>
+                  </div>
+                  <div class="mt-3 flex items-end justify-between border-t border-line pt-2">
+                    <span class="text-[11px] text-subtle">Lifetime PvE</span>
+                    <canvas id="player-sparkline-mobkills" width="60" height="20"></canvas>
+                  </div>
+                </div>
+
+                <!-- /Sell Earned Card -->
+                <div class="card p-5 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-medium text-muted">/Sell Earned</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coins size-4 text-emerald-400"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="m7 6 2 2-2 2"/><path d="m14 17 2 2-2 2"/></svg>
+                    </div>
+                    <p id="player-stat-sell-val" class="text-display text-3xl font-bold mt-2 text-emerald-400">₹17.60M</p>
+                    <p class="text-xs text-emerald-400/80 mt-1">Direct server sell</p>
+                  </div>
+                  <div class="mt-3 flex items-end justify-between border-t border-line pt-2">
+                    <span class="text-[11px] text-subtle">Server shop</span>
+                    <canvas id="player-sparkline-sell" width="60" height="20"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- History Section (Matching DonutStats 1:1) -->
+            <div class="card p-6 rounded-[20px]">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 class="text-display text-xl font-bold text-fg">History</h3>
+                  <p class="text-xs text-muted mt-0.5">Tracked changes over time.</p>
+                </div>
+                <!-- Range Pills -->
+                <div class="flex items-center gap-1 rounded-full bg-surface-2 p-1 border border-line">
+                  <button id="range-btn-1d" onclick="setPlayerHistoryRange('1D')" class="range-pill">1D</button>
+                  <button id="range-btn-7d" onclick="setPlayerHistoryRange('7D')" class="range-pill">7D</button>
+                  <button id="range-btn-30d" onclick="setPlayerHistoryRange('30D')" class="range-pill active">30D</button>
+                </div>
+              </div>
+
+              <!-- Metric Tab Pills -->
+              <div class="mt-4 flex flex-wrap gap-1.5 border-b border-line pb-3">
+                <button id="metric-tab-money" onclick="setPlayerHistoryMetric('money')" class="history-pill active">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                  Money
+                </button>
+                <button id="metric-tab-playtime" onclick="setPlayerHistoryMetric('playtime')" class="history-pill">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  Playtime
+                </button>
+                <button id="metric-tab-shards" onclick="setPlayerHistoryMetric('shards')" class="history-pill">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="M6 3h12l4 6-10 13L2 9Z"></path></svg>
+                  Shards
+                </button>
+                <button id="metric-tab-kills" onclick="setPlayerHistoryMetric('kills')" class="history-pill">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"></polyline><line x1="13" y1="19" x2="19" y2="13"></line></svg>
+                  Kills
+                </button>
+                <button id="metric-tab-deaths" onclick="setPlayerHistoryMetric('deaths')" class="history-pill">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><circle cx="9" cy="12" r="1"></circle><circle cx="15" cy="12" r="1"></circle><path d="M8 20v2h8v-2"></path></svg>
+                  Deaths
+                </button>
+                <button id="metric-tab-mobKills" onclick="setPlayerHistoryMetric('mobKills')" class="history-pill">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><circle cx="12" cy="12" r="10"></circle><path d="m4.93 4.93 4.24 4.24"></path><path d="m14.83 9.17 4.24-4.24"></path><path d="m14.83 14.83 4.24 4.24"></path><path d="m9.17 14.83-4.24 4.24"></path></svg>
+                  Mob kills
+                </button>
+                <button id="metric-tab-brokenBlocks" onclick="setPlayerHistoryMetric('brokenBlocks')" class="history-pill">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><rect width="18" height="18" x="3" y="3" rx="2"></rect></svg>
+                  Blocks broken
+                </button>
+                <button id="metric-tab-placedBlocks" onclick="setPlayerHistoryMetric('placedBlocks')" class="history-pill">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path></svg>
+                  Blocks placed
+                </button>
+              </div>
+
+              <!-- Interactive Chart Canvas -->
+              <div class="mt-4 relative h-64 w-full">
+                <canvas id="player-history-chart"></canvas>
+              </div>
+            </div>
+
+            <!-- Leaderboard Standings Table (1:1 DonutStats) -->
+            <div class="card p-6 rounded-[20px]">
+              <h3 class="text-display text-xl font-bold text-fg mb-1">Leaderboard standings</h3>
+              <p class="text-xs text-muted mb-4">Rankings across all tracked player leaderboards on Priyo SMP.</p>
+              
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                  <thead>
+                    <tr class="border-b border-line text-xs font-semibold text-subtle">
+                      <th class="pb-2.5 font-medium">Category</th>
+                      <th class="pb-2.5 font-medium">Rank</th>
+                      <th class="pb-2.5 font-medium">Value</th>
+                      <th class="pb-2.5 font-medium text-right">Percentile</th>
+                    </tr>
+                  </thead>
+                  <tbody id="player-standings-tbody" class="divide-y divide-line text-sm">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Player Insights & Active Listings / Orders -->
+            <div class="grid gap-6 md:grid-cols-2">
+              <!-- Insights Card -->
+              <div class="card p-6 rounded-[20px] flex flex-col justify-between">
+                <div>
+                  <h3 class="text-sm font-bold text-fg mb-3">Player Insights</h3>
+                  <div class="space-y-3 text-xs">
+                    <div class="flex items-center justify-between py-1.5 border-b border-line">
+                      <span class="text-muted">K/D Ratio</span>
+                      <strong id="player-insight-kd" class="text-fg font-mono">3.22</strong>
+                    </div>
+                    <div class="flex items-center justify-between py-1.5 border-b border-line">
+                      <span class="text-muted">Wealth Velocity</span>
+                      <strong id="player-insight-velocity" class="text-success font-mono">+₹5.23M / day</strong>
+                    </div>
+                    <div class="flex items-center justify-between py-1.5 border-b border-line">
+                      <span class="text-muted">Mined vs Placed</span>
+                      <strong id="player-insight-ratio" class="text-fg font-mono">2.92x</strong>
+                    </div>
+                    <div class="flex items-center justify-between py-1.5">
+                      <span class="text-muted">Daily Play Average</span>
+                      <strong id="player-insight-session" class="text-fg font-mono">4.2h / day</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Active /ah Listings -->
+              <div class="card p-6 rounded-[20px] flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-fg">Active /ah Listings</h3>
+                    <span id="player-listings-count" class="text-xs text-subtle font-mono">0 active</span>
+                  </div>
+                  <ul id="player-profile-listings" class="divide-y divide-line text-xs max-h-48 overflow-y-auto">
+                    <!-- Populated by JS -->
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =======================================================================
+         VIEW 11: DEVELOPER PROFILE (/dev)
+         ======================================================================= -->
+    <div id="view-dev" class="view-container view-hidden">
+      <div class="container-page pt-5 pb-12 sm:pt-6">
+        <!-- Breadcrumb -->
+        <nav aria-label="Breadcrumb" class="min-w-0 mb-4">
+          <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-subtle">
+            <li class="flex min-w-0 items-center gap-2"><a class="truncate transition-colors hover:text-fg cursor-pointer" onclick="navigateTo('stats')">Home</a><span aria-hidden="true" class="text-line-strong">/</span></li>
+            <li class="flex min-w-0 items-center gap-2"><span class="truncate text-fg font-medium">Developer</span></li>
+          </ol>
+        </nav>
+
+        <!-- Developer Hero Card -->
+        <div class="card p-6 sm:p-8 relative overflow-hidden bg-gradient-to-br from-surface to-surface-2 border border-line">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="flex items-center gap-5">
+              <div class="relative size-20 sm:size-24 rounded-2xl overflow-hidden ring-2 ring-primary/40 shadow-xl bg-surface-2 shrink-0">
+                <img alt="whynotshanks skin avatar" class="size-full object-cover pixelated" src="https://mc-heads.net/avatar/whynotshanks/128" onerror="this.src='/donut-assets/priyosmp_logo.png'">
+                <span class="absolute bottom-1 right-1 size-3.5 rounded-full bg-emerald-500 ring-2 ring-surface" title="Active Developer"></span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h1 class="text-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">whynotshanks</h1>
+                  <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-xs font-semibold text-emerald-400">
+                    <svg class="size-3" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    Verified Creator
+                  </span>
+                  <span class="inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-xs text-subtle font-mono">Dev ID: 26</span>
+                </div>
+                <p class="text-sm sm:text-base text-subtle mt-1 font-medium">Lead Developer &amp; Architect of PriyoSMP Stats</p>
+                <!-- Developer Social Contacts (Discord & GitHub) -->
+                <div class="mt-2.5 flex flex-wrap items-center gap-2">
+                  <button type="button" onclick="navigator.clipboard.writeText('whynotshanks'); if (typeof showToast === 'function') showToast('Copied Discord ID: whynotshanks');" class="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-[#5865F2]/15 px-3 py-1 text-xs font-medium text-indigo-300 hover:bg-[#5865F2]/25 transition-all cursor-pointer" title="Click to copy Discord ID: whynotshanks">
+                    <svg class="size-3.5 text-[#5865F2]" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                    </svg>
+                    <span>Discord: <strong class="text-white font-mono">whynotshanks</strong></span>
+                    <span class="text-[10px] text-indigo-400 bg-indigo-500/20 px-1 rounded">copy</span>
+                  </button>
+                  <a href="https://github.com/itzstebin" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface-2 px-3 py-1 text-xs font-medium text-fg hover:text-white hover:bg-surface transition-all cursor-pointer" title="Open GitHub Profile (https://github.com/itzstebin)">
+                    <svg class="size-3.5" viewBox="0 0 24 24" fill="currentColor">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                    </svg>
+                    <span>GitHub: <strong class="text-white font-mono">itzstebin</strong></span>
+                    <svg class="size-3 text-subtle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                </div>
+                <div class="mt-3 flex flex-wrap gap-2 text-xs">
+                  <span class="px-2.5 py-1 rounded-lg bg-surface-2 text-fg border border-line font-medium">Web Developer</span>
+                  <span class="px-2.5 py-1 rounded-lg bg-surface-2 text-fg border border-line font-medium">Backend Engineer</span>
+                  <span class="px-2.5 py-1 rounded-lg bg-surface-2 text-fg border border-line font-medium">Cybersecurity &amp; Reverse Engineering</span>
+                  <span class="px-2.5 py-1 rounded-lg bg-surface-2 text-fg border border-line font-medium">Minecraft Protocols</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Action Button -->
+            <div class="flex items-center gap-3 shrink-0">
+              <button onclick="openPlayerProfile('whynotshanks')" class="px-5 py-2.5 rounded-full bg-fg text-bg font-semibold text-sm hover:bg-fg/90 transition-all flex items-center gap-2">
+                <span>View In-Game Stats</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-Column Skills & Architecture Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          <!-- Column 1: Web Development -->
+          <div class="card p-6 flex flex-col justify-between">
+            <div>
+              <div class="size-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              </div>
+              <h3 class="text-lg font-bold text-fg">Web Development</h3>
+              <p class="text-xs text-subtle mt-2 leading-relaxed">
+                Full-stack SPA engineering with responsive design, dynamic Chart.js canvas graphing, zero-dependency Tailwind tokens, and interactive 3D pointer drag-to-rotate skin viewports.
+              </p>
+            </div>
+            <div class="mt-4 pt-4 border-t border-line flex flex-wrap gap-1.5 text-[11px] text-muted">
+              <span class="bg-surface-2 px-2 py-0.5 rounded">Tailwind CSS</span>
+              <span class="bg-surface-2 px-2 py-0.5 rounded">Chart.js</span>
+              <span class="bg-surface-2 px-2 py-0.5 rounded">Responsive UI</span>
+              <span class="bg-surface-2 px-2 py-0.5 rounded">SPA Routing</span>
+            </div>
+          </div>
+
+          <!-- Column 2: Backend Architecture -->
+          <div class="card p-6 flex flex-col justify-between">
+            <div>
+              <div class="size-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+              </div>
+              <h3 class="text-lg font-bold text-fg">Backend Engineering</h3>
+              <p class="text-xs text-subtle mt-2 leading-relaxed">
+                High-throughput Node.js microservices with SQLite timeseries indexing, atomic batch transactions, asynchronous task management, and RESTful API endpoints.
+              </p>
+            </div>
+            <div class="mt-4 pt-4 border-t border-line flex flex-wrap gap-1.5 text-[11px] text-muted">
+              <span class="bg-surface-2 px-2 py-0.5 rounded">Node.js</span>
+              <span class="bg-surface-2 px-2 py-0.5 rounded">Express</span>
+              <span class="bg-surface-2 px-2 py-0.5 rounded">SQLite3</span>
+              <span class="bg-surface-2 px-2 py-0.5 rounded">Timeseries Engine</span>
+            </div>
+          </div>
+
+          <!-- Column 3: Cybersecurity & Protocols -->
+          <div class="card p-6 flex flex-col justify-between">
+            <div>
+              <div class="size-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <h3 class="text-lg font-bold text-fg">Cybersecurity &amp; Protocols</h3>
+              <p class="text-xs text-subtle mt-2 leading-relaxed">
+                Network packet reverse engineering, headless protocol emulation (Mineflayer), in-game GUI window inspection, secure authentication handshakes, and rate-limiting safeguards.
+              </p>
+            </div>
+            <div class="mt-4 pt-4 border-t border-line flex flex-wrap gap-1.5 text-[11px] text-muted">
+              <span class="bg-surface-2 px-2 py-0.5 rounded">Reverse Engineering</span>
+              <span class="bg-surface-2 px-2 py-0.5 rounded">Packet Analysis</span>
+              <span class="bg-surface-2 px-2 py-0.5 rounded">Bot Security</span>
+              <span class="bg-surface-2 px-2 py-0.5 rounded">Protocol Automation</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- In-Game Stats & Tracker Status -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- In-Game Stats Card -->
+          <div class="card p-6">
+            <h3 class="text-base font-bold text-fg flex items-center justify-between">
+              <span>whynotshanks In-Game Stats</span>
+              <span class="text-xs text-subtle font-mono">play.priyosmp.com</span>
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+              <div class="p-3 rounded-xl bg-surface-2">
+                <span class="text-xs text-subtle block">Money</span>
+                <span class="text-display text-lg font-bold text-fg">₹443.65K</span>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-2">
+                <span class="text-xs text-subtle block">Playtime</span>
+                <span class="text-display text-lg font-bold text-fg">16d 9h</span>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-2">
+                <span class="text-xs text-subtle block">Mob Kills</span>
+                <span class="text-display text-lg font-bold text-emerald-400">809</span>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-2">
+                <span class="text-xs text-subtle block">/Sell Earned</span>
+                <span class="text-display text-lg font-bold text-fg">₹17.60M</span>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-2">
+                <span class="text-xs text-subtle block">Kills</span>
+                <span class="text-display text-lg font-bold text-fg">3</span>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-2">
+                <span class="text-xs text-subtle block">Deaths</span>
+                <span class="text-display text-lg font-bold text-fg">20</span>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-2">
+                <span class="text-xs text-subtle block">Blocks Placed</span>
+                <span class="text-display text-lg font-bold text-fg">14.52K</span>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-2">
+                <span class="text-xs text-subtle block">Blocks Broken</span>
+                <span class="text-display text-lg font-bold text-fg">22.45K</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project Stats Card -->
+          <div class="card p-6">
+            <h3 class="text-base font-bold text-fg flex items-center justify-between">
+              <span>PriyoSMP Stats Engine Metrics</span>
+              <span class="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
+                <span class="online-pulse-dot"></span> Live System
+              </span>
+            </h3>
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <div class="p-4 rounded-xl bg-surface-2">
+                <span class="text-xs text-subtle block">Auction Listings</span>
+                <span class="text-display text-2xl font-bold text-fg">576+</span>
+                <span class="text-[11px] text-muted block mt-0.5">24+ pages scraped</span>
+              </div>
+              <div class="p-4 rounded-xl bg-surface-2">
+                <span class="text-xs text-subtle block">Active Buy Orders</span>
+                <span class="text-display text-2xl font-bold text-fg">195+</span>
+                <span class="text-[11px] text-muted block mt-0.5">Tracked with /order</span>
+              </div>
+              <div class="p-4 rounded-xl bg-surface-2">
+                <span class="text-xs text-subtle block">Real Price Snapshots</span>
+                <span class="text-display text-2xl font-bold text-emerald-400">31,000+</span>
+                <span class="text-[11px] text-muted block mt-0.5">Verified since Nov 12</span>
+              </div>
+              <div class="p-4 rounded-xl bg-surface-2">
+                <span class="text-xs text-subtle block">Players Indexed</span>
+                <span class="text-display text-2xl font-bold text-fg">8,460+</span>
+                <span class="text-[11px] text-muted block mt-0.5">Baltop &amp; Playtime</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- =========================================================================
+       AUTHENTIC PRIYOSMP STATS FOOTER
+       ========================================================================= -->
+  <footer class="mt-12 border-t border-line safe-bottom">
+    <div class="container-page flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex items-center gap-3">
+        <img alt="PriyoSMP Logo" aria-hidden="true" class="shrink-0 pixelated h-6 w-auto object-contain" src="/donut-assets/priyosmp_logo.png">
+        <p class="text-[13px] text-subtle">
+          &copy; 2026 PriyoSMP Stats <span class="mx-1.5 text-line-strong">&middot;</span> <span class="text-muted font-medium">Dev: <a class="text-white font-semibold hover:underline cursor-pointer" onclick="navigateTo('dev')">whynotshanks</a></span> <span class="mx-1.5 text-line-strong">&middot;</span> Not affiliated with Priyo SMP or Mojang AB.
+        </p>
+      </div>
+      <div>
+        <a class="inline-flex items-center gap-2 rounded-full border border-line-strong px-3 py-1 text-xs text-fg transition-colors hover:bg-surface-2 cursor-pointer" onclick="navigateTo('stats')">
+          <span aria-hidden="true" class="online-pulse-dot"></span>
+          <span><span id="footer-online-count" class="tabular-nums">--</span> online</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Popup -->
+  <div id="toast">
+    <span id="toast-msg">Copied!</span>
+  </div>
+
+  <!-- SkinView3D Interactive 3D Minecraft Model Viewer -->
+  <script src="/donut-assets/skinview3d.bundle.js"></script>
+  <!-- Client Application Script -->
+  <script src="/app.js"></script>
+</body>
+</html>

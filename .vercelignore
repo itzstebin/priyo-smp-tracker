@@ -1,0 +1,12 @@
+# Vercel Ignore File
+node_modules
+bot/
+.git
+.github
+*.log
+*.txt
+*.py
+scratch/
+test*
+backfill*
+clean*

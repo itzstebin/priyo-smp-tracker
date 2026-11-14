@@ -1,0 +1,24 @@
+{
+  "name": "priyo-smp-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "bot": "node bot/scraper.js",
+    "bot:mock": "node bot/scraper.js --mock"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "chart.js": "^4.6.1",
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "mineflayer": "^4.39.0",
+    "skinview3d": "^3.4.2",
+    "sqlite3": "^6.0.1"
+  }
+}
