@@ -7,7 +7,7 @@
       "config": {
         "includeFiles": [
           "client/**",
-          "server/data/tracker.db"
+          "server/**"
         ]
       }
     }

@@ -20,18 +20,27 @@ const dbPath = path.join(dataDir, 'tracker.db');
 
 // If on Vercel and /tmp/tracker.db does not exist, copy the bundled tracker.db to /tmp
 if (isVercel && !fs.existsSync(dbPath)) {
-  const seedDbPath = path.join(__dirname, 'data', 'tracker.db');
-  if (fs.existsSync(seedDbPath)) {
-    try {
-      fs.copyFileSync(seedDbPath, dbPath);
-      console.log('✅ [Vercel] Seeded tracker.db into /tmp/tracker.db');
-    } catch (err) {
-      console.error('⚠️ [Vercel] Failed to copy seed tracker.db to /tmp:', err.message);
+  const candidateSeeds = [
+    path.join(process.cwd(), 'server', 'data', 'tracker.db'),
+    path.join(__dirname, 'data', 'tracker.db'),
+    path.join(__dirname, '..', 'server', 'data', 'tracker.db')
+  ];
+  for (const seed of candidateSeeds) {
+    if (fs.existsSync(seed)) {
+      try {
+        fs.copyFileSync(seed, dbPath);
+        console.log(`✅ [Vercel] Seeded tracker.db from ${seed} into ${dbPath}`);
+        break;
+      } catch (err) {
+        console.error('⚠️ [Vercel] Failed to copy seed tracker.db to /tmp:', err.message);
+      }
     }
   }
 }
 
-const db = new sqlite3.Database(dbPath);
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) console.error('SQLite connection error:', err);
+});
 
 // Enable WAL mode and busy timeout for high concurrency
 if (!isVercel) {

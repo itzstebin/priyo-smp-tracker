@@ -32,8 +32,6 @@ const {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const mc = require('minecraft-protocol');
-
 let liveServerStatus = {
   online: true,
   playersOnline: 48,
@@ -43,31 +41,23 @@ let liveServerStatus = {
   lastPing: Date.now()
 };
 
-function pingPriyoServer() {
-  mc.ping({ host: 'play.priyosmp.com', port: 25565, timeout: 5000 }, (err, res) => {
-    if (!err && res && res.players) {
-      liveServerStatus.online = true;
-      liveServerStatus.playersOnline = Number(res.players.online) || 48;
-      liveServerStatus.maxPlayers = Number(res.players.max) || 1000;
+async function pingPriyoServer() {
+  try {
+    const res = await fetch('https://api.mcsrvstat.us/3/play.priyosmp.com', {
+      signal: AbortSignal.timeout(4000)
+    });
+    const d = await res.json();
+    if (d && d.players) {
+      liveServerStatus.online = !!d.online;
+      liveServerStatus.playersOnline = Number(d.players.online) || 48;
+      liveServerStatus.maxPlayers = Number(d.players.max) || 1000;
       liveServerStatus.lastPing = Date.now();
-    } else {
-      fetch('https://api.mcsrvstat.us/3/play.priyosmp.com')
-        .then(r => r.json())
-        .then(d => {
-          if (d && d.players) {
-            liveServerStatus.online = !!d.online;
-            liveServerStatus.playersOnline = Number(d.players.online) || 48;
-            liveServerStatus.maxPlayers = Number(d.players.max) || 1000;
-            liveServerStatus.lastPing = Date.now();
-          }
-        })
-        .catch(() => {});
     }
-  });
+  } catch (e) {}
 }
 
-pingPriyoServer();
 if (!process.env.VERCEL) {
+  pingPriyoServer();
   setInterval(pingPriyoServer, 20000);
 }
 
@@ -76,7 +66,10 @@ app.use(express.json({ limit: '10mb' }));
 app.set('json spaces', 2);
 
 // GET /v1/status - Live server online player count
-app.get(['/v1/status', '/api/status'], (req, res) => {
+app.get(['/v1/status', '/api/status'], async (req, res) => {
+  if (Date.now() - liveServerStatus.lastPing > 30000) {
+    await pingPriyoServer();
+  }
   res.json({
     success: true,
     server: 'play.priyosmp.com',
@@ -84,8 +77,20 @@ app.get(['/v1/status', '/api/status'], (req, res) => {
   });
 });
 
-// Serve static frontend files
-app.use(express.static(path.join(__dirname, '..', 'client')));
+function getClientDir() {
+  const candidates = [
+    path.join(process.cwd(), 'client'),
+    path.join(__dirname, '..', 'client'),
+    path.join(__dirname, 'client')
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return c;
+  }
+  return path.join(process.cwd(), 'client');
+}
+
+const clientDir = getClientDir();
+app.use(express.static(clientDir));
 
 /**
  * ============================================================================
@@ -414,14 +419,17 @@ app.get('/api/bot/check-trigger', (req, res) => {
 });
 
 // SPA fallback for all frontend DonutStats URLs
-const indexHtmlPath = path.resolve(__dirname, '..', 'client', 'index.html');
 app.use((req, res, next) => {
   if (req.path.startsWith('/v1') || req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'Endpoint not found' });
   }
   try {
-    const html = fs.readFileSync(indexHtmlPath, 'utf8');
-    res.type('html').send(html);
+    const indexPath = path.join(clientDir, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      const html = fs.readFileSync(indexPath, 'utf8');
+      return res.type('html').send(html);
+    }
+    return res.status(200).send('<h1>PriyoSMP Tracker</h1><p>Ready.</p>');
   } catch (err) {
     res.status(500).send('Error loading page: ' + err.message);
   }
