@@ -77,7 +77,7 @@ function getActiveListings({ search = '', category = 'All', sort = 'newest', pag
     } else if (sort === 'ending_soon') {
       list.sort((a, b) => (a.expires_at || 0) - (b.expires_at || 0));
     } else {
-      list.sort((a, b) => (b.id || 0) - (a.id || 0));
+      list.sort((a, b) => (b.scanned_at || b.first_seen_at || b.id || 0) - (a.scanned_at || a.first_seen_at || a.id || 0));
     }
 
     const total = list.length;
@@ -399,11 +399,16 @@ function getRecentSales(limit = 10) {
 
 function getVerifiedDeals() {
   return new Promise((resolve) => {
-    const deals = snapshotData.active_listings.slice(0, 6).map(l => ({
+    const list = [...snapshotData.active_listings]
+      .filter(l => l.price > 0 && l.price <= 20000000 && !['Wheat Seeds', 'Cooked Chicken', 'Poppy', 'Large Fern', 'Dirt', 'Seeds'].includes(l.display_name))
+      .sort((a, b) => (b.scanned_at || b.first_seen_at || 0) - (a.scanned_at || a.first_seen_at || 0));
+    const deals = list.slice(0, 6).map(l => ({
       ...l,
+      item_name: l.display_name || l.raw_name,
       market_average: Math.round(l.unit_price * 1.5),
       discount_percent: 33,
-      potential_profit: Math.round(l.unit_price * 0.5 * l.count)
+      potential_profit: Math.round(l.unit_price * 0.5 * l.count),
+      created_at: l.scanned_at || l.first_seen_at || Date.now()
     }));
     resolve(deals);
   });
@@ -492,29 +497,38 @@ function getPlayersList({ search = '', limit = 50, page = 1 }) {
 function ingestListings(listings, source = 'bot') {
   return new Promise((resolve) => {
     if (!Array.isArray(listings) || listings.length === 0) return resolve({ success: true, count: 0 });
-    listings.forEach(item => {
-      const name = item.displayName || item.rawName || 'Item';
+    const now = Date.now();
+    listings.forEach((item, idx) => {
+      const name = item.displayName || item.display_name || item.rawName || item.raw_name || 'Item';
       const seller = item.seller || 'Unknown';
       const price = Number(item.price) || 0;
-      const count = Number(item.count) || 1;
-      const sig = `${seller}::${name}::${price}::${count}`;
+      const count = Number(item.count) || Number(item.quantity) || 1;
+      const sig = item.listing_sig || `${seller}::${name}::${price}::${count}`;
       const existing = snapshotData.active_listings.findIndex(l => l.listing_sig === sig);
       const entry = {
+        id: item.id || (730000 + idx),
         listing_sig: sig,
         display_name: name,
-        raw_name: item.rawName || name,
+        raw_name: item.rawName || item.raw_name || name,
         count,
         price,
-        unit_price: item.unitPrice || price,
+        unit_price: Number(item.unitPrice || item.unit_price) || (price / count) || price,
         seller,
         category: item.category || standardizeCategory(name),
-        last_seen_at: Date.now(),
-        expires: item.expires || '24h'
+        first_seen_at: item.first_seen_at || (existing >= 0 ? snapshotData.active_listings[existing].first_seen_at : now),
+        last_seen_at: now,
+        scanned_at: now,
+        expires: item.expires || '24h',
+        expires_at: item.expires_at || (now + 24 * 3600 * 1000)
       };
       if (existing >= 0) snapshotData.active_listings[existing] = entry;
-      else snapshotData.active_listings.push(entry);
+      else snapshotData.active_listings.unshift(entry);
     });
-    resolve({ success: true, count: listings.length, timestamp: Date.now() });
+    try {
+      const snapPath = path.join(__dirname, 'data', 'snapshot.json');
+      fs.writeFileSync(snapPath, JSON.stringify(snapshotData, null, 2));
+    } catch (e) {}
+    resolve({ success: true, count: listings.length, timestamp: now });
   });
 }
 

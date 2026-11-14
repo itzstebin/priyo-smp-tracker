@@ -518,7 +518,9 @@ function escapeHtml(str) {
 
 function timeAgo(timestamp) {
   if (!timestamp) return 'Just now';
-  const diff = Math.floor((Date.now() - new Date(timestamp).getTime()) / 1000);
+  const time = typeof timestamp === 'number' ? timestamp : new Date(timestamp).getTime();
+  const diff = Math.floor((Date.now() - time) / 1000);
+  if (diff <= 15) return 'Just now';
   if (diff < 60) return `${Math.max(1, diff)}s ago`;
   const mins = Math.floor(diff / 60);
   if (mins < 60) return `${mins}m ago`;

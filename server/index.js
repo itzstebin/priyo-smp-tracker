@@ -89,11 +89,11 @@ function getClientDir() {
   return path.join(process.cwd(), 'client');
 }
 
-const clientDir = getClientDir();
-app.use(express.static(clientDir));
-
 // Healthcheck endpoint for Railway / cloud runners
 app.get('/health', (req, res) => res.status(200).send('OK'));
+
+const clientDir = getClientDir();
+app.use(express.static(clientDir));
 
 /**
  * ============================================================================
@@ -423,7 +423,7 @@ app.get('/api/bot/check-trigger', (req, res) => {
 
 // SPA fallback for all frontend DonutStats URLs
 app.use((req, res, next) => {
-  if (req.path.startsWith('/v1') || req.path.startsWith('/api/')) {
+  if (req.path === '/health' || req.path.startsWith('/v1') || req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'Endpoint not found' });
   }
   try {
@@ -448,12 +448,14 @@ if (!process.env.VERCEL) {
 
     // Auto-launch the 24/7 scraper bot in persistent cloud environments (Railway, Render, VPS)
     if (process.env.RUN_BOT !== 'false') {
-      try {
-        console.log('🤖 Auto-starting 24/7 scraper bot (helloeveryoneiam)...');
-        require('../bot/scraper.js');
-      } catch (botErr) {
-        console.error('Failed to auto-start bot:', botErr.message);
-      }
+      setTimeout(() => {
+        try {
+          console.log('🤖 Auto-starting 24/7 scraper bot (helloeveryoneiam)...');
+          require('../bot/scraper.js');
+        } catch (botErr) {
+          console.error('Failed to auto-start bot:', botErr.message);
+        }
+      }, 3000);
     }
   });
 }
