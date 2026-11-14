@@ -448,9 +448,9 @@ function ingestListings(listings, source = 'bot') {
       `, [now - 60000, now + 60000]);
 
       // Purge listings that have actually expired past their deadline (expires_at < now)
-      // or were cancelled / timed out and not seen in 15 minutes
+      // or were cancelled / timed out and not seen in 2 hours
       // All historical prices are permanently stored in price_history table!
-      db.run(`DELETE FROM active_listings WHERE (expires_at < ? AND expires_at IS NOT NULL) OR (last_seen_at < ? AND last_seen_at IS NOT NULL)`, [now, now - 900000]);
+      db.run(`DELETE FROM active_listings WHERE (expires_at < ? AND expires_at IS NOT NULL) OR (last_seen_at < ? AND last_seen_at IS NOT NULL)`, [now, now - 7200000]);
 
       db.run(`INSERT INTO bot_logs (source, item_count, scanned_at) VALUES (?, ?, ?)`, [source, listings.length, now]);
 
@@ -525,8 +525,8 @@ function ingestBuyOrders(orders, source = 'bot') {
       upsertStmt.finalize();
 
       // Purge buy orders that have actually expired past their deadline (expires_at < now)
-      // or were filled / cancelled / timed out and not seen in 15 minutes
-      db.run(`DELETE FROM buy_orders WHERE (expires_at < ? AND expires_at IS NOT NULL) OR (last_seen_at < ? AND last_seen_at IS NOT NULL)`, [now, now - 900000]);
+      // or were filled / cancelled / timed out and not seen in 2 hours
+      db.run(`DELETE FROM buy_orders WHERE (expires_at < ? AND expires_at IS NOT NULL) OR (last_seen_at < ? AND last_seen_at IS NOT NULL)`, [now, now - 7200000]);
 
       db.run('COMMIT', (err) => {
         if (err) return reject(err);
@@ -541,60 +541,64 @@ function ingestBuyOrders(orders, source = 'bot') {
  */
 function getActiveListings({ search = '', category = 'All', sort = 'newest', page = 1, limit = 50 }) {
   return new Promise((resolve, reject) => {
-    const now = Date.now();
-    const staleCutoff = now - (15 * 60 * 1000); // Only show active items seen within last 15 minutes
-    let whereClauses = [
-      '(expires_at IS NULL OR expires_at > ?)',
-      '(last_seen_at IS NULL OR last_seen_at >= ?)',
-      'seller IS NOT NULL',
-      "seller != 'Unknown'",
-      "seller != ''",
-      'price > 0'
-    ];
-    let params = [now, staleCutoff];
+    db.get('SELECT MAX(last_seen_at) as maxSeen FROM active_listings', (errMax, maxRow) => {
+      if (errMax) return reject(errMax);
+      const now = Date.now();
+      const latestScan = maxRow?.maxSeen || now;
+      const staleCutoff = latestScan - (25 * 60 * 1000); // Items from latest snapshot cycle
+      let whereClauses = [
+        '(expires_at IS NULL OR expires_at > ?)',
+        '(last_seen_at IS NULL OR last_seen_at >= ?)',
+        'seller IS NOT NULL',
+        "seller != 'Unknown'",
+        "seller != ''",
+        'price > 0'
+      ];
+      let params = [now, staleCutoff];
 
-    if (search) {
-      whereClauses.push('(display_name LIKE ? OR raw_name LIKE ? OR seller LIKE ? OR enchants LIKE ?)');
-      const s = `%${search}%`;
-      params.push(s, s, s, s);
-    }
+      if (search) {
+        whereClauses.push('(display_name LIKE ? OR raw_name LIKE ? OR seller LIKE ? OR enchants LIKE ?)');
+        const s = `%${search}%`;
+        params.push(s, s, s, s);
+      }
 
-    if (category && category !== 'All') {
-      whereClauses.push('category = ?');
-      params.push(category);
-    }
+      if (category && category !== 'All') {
+        whereClauses.push('category = ?');
+        params.push(category);
+      }
 
-    const where = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+      const where = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
-    let orderBy = 'ORDER BY expires_at DESC, id DESC';
-    if (sort === 'lowest_price' || sort === 'cheapest' || sort === 'unit_price') orderBy = 'ORDER BY unit_price ASC, price ASC';
-    if (sort === 'highest_price' || sort === 'expensive') orderBy = 'ORDER BY unit_price DESC, price DESC';
-    if (sort === 'ending_soon') orderBy = 'ORDER BY expires_at ASC';
-    if (sort === 'newest') orderBy = 'ORDER BY expires_at DESC, id DESC';
+      let orderBy = 'ORDER BY expires_at DESC, id DESC';
+      if (sort === 'lowest_price' || sort === 'cheapest' || sort === 'unit_price') orderBy = 'ORDER BY unit_price ASC, price ASC';
+      if (sort === 'highest_price' || sort === 'expensive') orderBy = 'ORDER BY unit_price DESC, price DESC';
+      if (sort === 'ending_soon') orderBy = 'ORDER BY expires_at ASC';
+      if (sort === 'newest') orderBy = 'ORDER BY expires_at DESC, id DESC';
 
-    const offset = (page - 1) * limit;
+      const offset = (page - 1) * limit;
 
-    const countQuery = `SELECT COUNT(*) as total FROM active_listings ${where}`;
-    const dataQuery = `SELECT * FROM active_listings ${where} ${orderBy} LIMIT ? OFFSET ?`;
+      const countQuery = `SELECT COUNT(*) as total FROM active_listings ${where}`;
+      const dataQuery = `SELECT * FROM active_listings ${where} ${orderBy} LIMIT ? OFFSET ?`;
 
-    db.get(countQuery, params, (err, countRow) => {
-      if (err) return reject(err);
-      const total = countRow ? countRow.total : 0;
-
-      db.all(dataQuery, [...params, limit, offset], (err, rows) => {
+      db.get(countQuery, params, (err, countRow) => {
         if (err) return reject(err);
-        
-        const formatted = rows.map(r => ({
-          ...r,
-          enchants: JSON.parse(r.enchants || '[]'),
-          lore: JSON.parse(r.lore || '[]')
-        }));
+        const total = countRow ? countRow.total : 0;
 
-        resolve({
-          total,
-          page,
-          totalPages: Math.ceil(total / limit) || 1,
-          listings: formatted
+        db.all(dataQuery, [...params, limit, offset], (err, rows) => {
+          if (err) return reject(err);
+          
+          const formatted = rows.map(r => ({
+            ...r,
+            enchants: JSON.parse(r.enchants || '[]'),
+            lore: JSON.parse(r.lore || '[]')
+          }));
+
+          resolve({
+            total,
+            page,
+            totalPages: Math.ceil(total / limit) || 1,
+            listings: formatted
+          });
         });
       });
     });
@@ -606,54 +610,58 @@ function getActiveListings({ search = '', category = 'All', sort = 'newest', pag
  */
 function getBuyOrders({ search = '', category = 'All', sort = 'highest_price', page = 1, limit = 50 }) {
   return new Promise((resolve, reject) => {
-    const now = Date.now();
-    const staleCutoff = now - (15 * 60 * 1000); // Only show active unexpired orders seen within last 15 minutes
-    let whereClauses = [
-      '(expires_at IS NULL OR expires_at > ?)',
-      '(last_seen_at IS NULL OR last_seen_at >= ?)'
-    ];
-    let params = [now, staleCutoff];
+    db.get('SELECT MAX(last_seen_at) as maxSeen FROM buy_orders', (errMax, maxRow) => {
+      if (errMax) return reject(errMax);
+      const now = Date.now();
+      const latestScan = maxRow?.maxSeen || now;
+      const staleCutoff = latestScan - (25 * 60 * 1000); // Orders from latest snapshot cycle
+      let whereClauses = [
+        '(expires_at IS NULL OR expires_at > ?)',
+        '(last_seen_at IS NULL OR last_seen_at >= ?)'
+      ];
+      let params = [now, staleCutoff];
 
-    if (search) {
-      whereClauses.push('(item_name LIKE ? OR player LIKE ?)');
-      const s = `%${search}%`;
-      params.push(s, s);
-    }
+      if (search) {
+        whereClauses.push('(item_name LIKE ? OR player LIKE ?)');
+        const s = `%${search}%`;
+        params.push(s, s);
+      }
 
-    if (category && category !== 'All') {
-      whereClauses.push('category = ?');
-      params.push(category);
-    }
+      if (category && category !== 'All') {
+        whereClauses.push('category = ?');
+        params.push(category);
+      }
 
-    const where = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+      const where = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
-    let orderBy = 'ORDER BY unit_price DESC';
-    if (sort === 'cheapest') orderBy = 'ORDER BY unit_price ASC';
-    if (sort === 'budget' || sort === 'highest_payout') orderBy = 'ORDER BY total_budget DESC';
-    if (sort === 'units') orderBy = 'ORDER BY units_wanted DESC';
-    if (sort === 'newest') orderBy = 'ORDER BY id DESC';
-    if (sort === 'highest_price') orderBy = 'ORDER BY unit_price DESC';
+      let orderBy = 'ORDER BY unit_price DESC';
+      if (sort === 'cheapest') orderBy = 'ORDER BY unit_price ASC';
+      if (sort === 'budget' || sort === 'highest_payout') orderBy = 'ORDER BY total_budget DESC';
+      if (sort === 'units') orderBy = 'ORDER BY units_wanted DESC';
+      if (sort === 'newest') orderBy = 'ORDER BY id DESC';
+      if (sort === 'highest_price') orderBy = 'ORDER BY unit_price DESC';
 
-    const offset = (page - 1) * limit;
+      const offset = (page - 1) * limit;
 
-    const countQuery = `SELECT COUNT(*) as total, COALESCE(SUM(total_budget), 0) as total_money_in_orders, COALESCE(SUM(units_wanted), 0) as total_units_wanted FROM buy_orders ${where}`;
-    const dataQuery = `SELECT * FROM buy_orders ${where} ${orderBy} LIMIT ? OFFSET ?`;
+      const countQuery = `SELECT COUNT(*) as total, COALESCE(SUM(total_budget), 0) as total_money_in_orders, COALESCE(SUM(units_wanted), 0) as total_units_wanted FROM buy_orders ${where}`;
+      const dataQuery = `SELECT * FROM buy_orders ${where} ${orderBy} LIMIT ? OFFSET ?`;
 
-    db.get(countQuery, params, (err, countRow) => {
-      if (err) return reject(err);
-      const total = countRow ? countRow.total : 0;
-      const totalMoney = countRow ? countRow.total_money_in_orders : 0;
+      db.get(countQuery, params, (err, countRow) => {
+        if (err) return reject(err);
+        const total = countRow ? countRow.total : 0;
+        const totalMoney = countRow ? countRow.total_money_in_orders : 0;
       const totalUnits = countRow ? countRow.total_units_wanted : 0;
 
-      db.all(dataQuery, [...params, limit, offset], (err, rows) => {
-        if (err) return reject(err);
-        resolve({
-          total,
-          totalMoneyInOrders: totalMoney,
-          totalUnitsWanted: totalUnits,
-          page,
-          totalPages: Math.ceil(total / limit) || 1,
-          orders: rows
+        db.all(dataQuery, [...params, limit, offset], (err, rows) => {
+          if (err) return reject(err);
+          resolve({
+            total,
+            totalMoneyInOrders: totalMoney,
+            totalUnitsWanted: totalUnits,
+            page,
+            totalPages: Math.ceil(total / limit) || 1,
+            orders: rows
+          });
         });
       });
     });
@@ -1219,37 +1227,40 @@ function getItemHistory(itemName, days = 7) {
 function getItemDetails(itemName) {
   return new Promise((resolve, reject) => {
     const cleanName = (itemName || '').trim();
-    const now = Date.now();
-    const staleCutoff = now - (15 * 60 * 1000);
+    db.get('SELECT MAX(last_seen_at) as maxSeen FROM active_listings', (errMax, maxRow) => {
+      if (errMax) return reject(errMax);
+      const now = Date.now();
+      const latestScan = maxRow?.maxSeen || now;
+      const staleCutoff = latestScan - (25 * 60 * 1000);
 
-    const listingsQuery = `
-      SELECT * FROM active_listings 
-      WHERE display_name = ? COLLATE NOCASE 
-        AND (expires_at IS NULL OR expires_at > ?)
-        AND (last_seen_at IS NULL OR last_seen_at >= ?)
-      ORDER BY unit_price ASC
-    `;
-    const ordersQuery = `
-      SELECT * FROM buy_orders 
-      WHERE item_name = ? COLLATE NOCASE 
-        AND (expires_at IS NULL OR expires_at > ?)
-        AND (last_seen_at IS NULL OR last_seen_at >= ?)
-      ORDER BY unit_price DESC
-    `;
+      const listingsQuery = `
+        SELECT * FROM active_listings 
+        WHERE display_name = ? COLLATE NOCASE 
+          AND (expires_at IS NULL OR expires_at > ?)
+          AND (last_seen_at IS NULL OR last_seen_at >= ?)
+        ORDER BY unit_price ASC
+      `;
+      const ordersQuery = `
+        SELECT * FROM buy_orders 
+        WHERE item_name = ? COLLATE NOCASE 
+          AND (expires_at IS NULL OR expires_at > ?)
+          AND (last_seen_at IS NULL OR last_seen_at >= ?)
+        ORDER BY unit_price DESC
+      `;
 
-    const salesQuery = `
-      SELECT id, item_name, category, price, unit_price, quantity, seller, buyer, source, sold_at
-      FROM item_sales
-      WHERE item_name = ? COLLATE NOCASE
-      ORDER BY sold_at DESC
-      LIMIT 12
-    `;
+      const salesQuery = `
+        SELECT id, item_name, category, price, unit_price, quantity, seller, buyer, source, sold_at
+        FROM item_sales
+        WHERE item_name = ? COLLATE NOCASE
+        ORDER BY sold_at DESC
+        LIMIT 12
+      `;
 
-    db.all(listingsQuery, [cleanName, now, staleCutoff], (err, listings) => {
-      if (err) return reject(err);
+      db.all(listingsQuery, [cleanName, now, staleCutoff], (err, listings) => {
+        if (err) return reject(err);
 
-      db.all(ordersQuery, [cleanName, now, staleCutoff], (err2, orders) => {
-        if (err2) return reject(err2);
+        db.all(ordersQuery, [cleanName, now, staleCutoff], (err2, orders) => {
+          if (err2) return reject(err2);
 
         db.all(salesQuery, [cleanName], (err3, sales) => {
           if (err3) console.error('Sales query error:', err3);
@@ -1348,6 +1359,7 @@ function getItemDetails(itemName) {
         });
       });
     });
+    });
   });
 }
 
@@ -1368,50 +1380,53 @@ function generateSparkline(basePrice, seed = 5) {
 
 function getTrackedItems() {
   return new Promise((resolve, reject) => {
-    const now = Date.now();
-    const staleCutoff = now - (15 * 60 * 1000);
+    db.get('SELECT MAX(last_seen_at) as maxSeen FROM active_listings', (errMax, maxRow) => {
+      if (errMax) return reject(errMax);
+      const now = Date.now();
+      const latestScan = maxRow?.maxSeen || now;
+      const staleCutoff = latestScan - (25 * 60 * 1000);
 
-    const listingsQuery = `
-      SELECT 
-        display_name as item_name,
-        category,
-        MIN(unit_price) as lowest_price,
-        AVG(unit_price) as asking_price,
-        COUNT(*) as listings_count,
-        SUM(count) as total_units
-      FROM active_listings
-      WHERE (expires_at IS NULL OR expires_at > ?)
-        AND (last_seen_at IS NULL OR last_seen_at >= ?)
-        AND unit_price < 50000000
-      GROUP BY display_name
-    `;
+      const listingsQuery = `
+        SELECT 
+          display_name as item_name,
+          category,
+          MIN(unit_price) as lowest_price,
+          AVG(unit_price) as asking_price,
+          COUNT(*) as listings_count,
+          SUM(count) as total_units
+        FROM active_listings
+        WHERE (expires_at IS NULL OR expires_at > ?)
+          AND (last_seen_at IS NULL OR last_seen_at >= ?)
+          AND unit_price < 50000000
+        GROUP BY display_name
+      `;
 
-    const ordersQuery = `
-      SELECT 
-        item_name,
-        MAX(unit_price) as top_order,
-        COUNT(*) as orders_count,
-        SUM(units_wanted - units_filled) as total_wanted,
-        SUM(total_budget) as total_budget
-      FROM buy_orders
-      WHERE (expires_at IS NULL OR expires_at > ?)
-        AND (last_seen_at IS NULL OR last_seen_at >= ?)
-      GROUP BY item_name
-    `;
+      const ordersQuery = `
+        SELECT 
+          item_name,
+          MAX(unit_price) as top_order,
+          COUNT(*) as orders_count,
+          SUM(units_wanted - units_filled) as total_wanted,
+          SUM(total_budget) as total_budget
+        FROM buy_orders
+        WHERE (expires_at IS NULL OR expires_at > ?)
+          AND (last_seen_at IS NULL OR last_seen_at >= ?)
+        GROUP BY item_name
+      `;
 
-    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-    const historyQuery = `
-      SELECT item_name, min_price, avg_price, recorded_at
-      FROM price_history
-      WHERE recorded_at >= ?
-      ORDER BY recorded_at ASC
-    `;
+      const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+      const historyQuery = `
+        SELECT item_name, min_price, avg_price, recorded_at
+        FROM price_history
+        WHERE recorded_at >= ?
+        ORDER BY recorded_at ASC
+      `;
 
-    db.all(listingsQuery, [now, staleCutoff], (err, ahRows) => {
-      if (err) return reject(err);
-
-      db.all(ordersQuery, [now, staleCutoff], (err, ordRows) => {
+      db.all(listingsQuery, [now, staleCutoff], (err, ahRows) => {
         if (err) return reject(err);
+
+        db.all(ordersQuery, [now, staleCutoff], (err, ordRows) => {
+          if (err) return reject(err);
 
         db.all(historyQuery, [thirtyDaysAgo], (err, histRows) => {
           if (err) return reject(err);
@@ -1566,6 +1581,7 @@ function getTrackedItems() {
         });
       });
     });
+  });
   });
 });
 }

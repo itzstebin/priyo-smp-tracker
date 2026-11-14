@@ -7,9 +7,9 @@
   "bot": {
     "username": "helloeveryoneiam",
     "auth": "offline",
-    "autoLoginPassword": "8492015382",
-    "loginCommand": "/login 8492015382",
-    "registerCommand": "/register 8492015382 8492015382",
+    "autoLoginPassword": "84920!helloeveryoneiam",
+    "loginCommand": "/login 84920!helloeveryoneiam",
+    "registerCommand": "/register 84920!helloeveryoneiam 84920!helloeveryoneiam",
     "ahCommand": "/ah",
     "orderCommand": "/order",
     "scanIntervalSeconds": 60,

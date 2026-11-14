@@ -31,6 +31,11 @@ function normalizeSmallCaps(str) {
   return out.toLowerCase();
 }
 
+function stripColorCodes(text) {
+  if (!text) return '';
+  return text.replace(/[§&][0-9a-fk-or]/gi, '').trim();
+}
+
 function extractTitleString(title) {
   if (!title) return '';
   if (typeof title === 'string') {
@@ -75,23 +80,32 @@ function getRawLoreLines(item) {
 function isFilterAllSelected(hopperItem) {
   if (!hopperItem) return false;
   const rawLore = getRawLoreLines(hopperItem);
-  if (!rawLore || rawLore.length === 0) return false;
+  if (!rawLore || rawLore.length === 0) return true;
 
-  for (const line of rawLore) {
+  // In Priyo SMP AH & Orders, the first line of the category filter lore is "⬝ ᴀʟʟ".
+  // When ALL is active, the first line is green.
+  const firstLine = rawLore[0];
+  if (firstLine) {
     try {
-      const p = typeof line === 'string' ? JSON.parse(line) : line;
+      const p = typeof firstLine === 'string' ? JSON.parse(firstLine) : firstLine;
       const color = p.color || (p.extra && p.extra[0] && p.extra[0].color);
-      const txt = p.text || (p.extra && p.extra[0] && p.extra[0].text) || '';
-      const isGreen = color === 'green' || color === '#6bf18d' || color === '#55FF55';
-      if (isGreen) {
-        return txt.includes('ᴀʟʟ') || txt.toLowerCase().includes('all');
+      if (color === 'green' || color === '#6bf18d' || color === '#55FF55' || color === 'lime') {
+        return true;
       }
     } catch {
-      if (line.includes('§a') || line.includes('#6bf18d') || line.includes('green')) {
-        return line.includes('ᴀʟʟ') || line.toLowerCase().includes('all');
+      if (firstLine.includes('green') || firstLine.includes('§a') || firstLine.includes('#6b')) {
+        return true;
       }
     }
   }
+
+  for (const line of rawLore) {
+    if (line.includes('green') || line.includes('§a')) {
+      const clean = normalizeSmallCaps(stripColorCodes(line));
+      if (clean.includes('all')) return true;
+    }
+  }
+
   return false;
 }
 
@@ -588,30 +602,33 @@ class AhScraperBot {
   }
 
   async ensureAhFilterIsAll(window) {
-    const hopper = window.slots[48];
+    let cur = this.bot.currentWindow || window;
+    const hopper = cur.slots[48];
     if (!hopper) return;
     if (isFilterAllSelected(hopper)) {
       console.log('✅ AH Filter is already set to ALL.');
       return;
     }
 
-    console.log('🔄 AH Filter is NOT set to ALL. Cycling forward using right-click...');
-    for (let c = 0; c < 10; c++) {
-      await this.bot.clickWindow(48, 1, 0); // Right-click cycles forward in /ah
-      await new Promise(r => setTimeout(r, 1000));
-      const updated = window.slots[48];
+    console.log('🔄 AH Filter is NOT set to ALL. Cycling forward to reach ALL...');
+    for (let c = 0; c < 12; c++) {
+      await this.bot.clickWindow(48, 0, 0); // Left-click cycles forward in /ah
+      await new Promise(r => setTimeout(r, 700));
+      cur = this.bot.currentWindow || window;
+      const updated = cur.slots[48];
       const isAll = isFilterAllSelected(updated);
       console.log(`[AH Filter Click ${c + 1}] is ALL now? ${isAll}`);
       if (isAll) {
         console.log(`✅ AH Filter successfully cycled to ALL after ${c + 1} clicks!`);
-        await new Promise(r => setTimeout(r, 800));
+        await new Promise(r => setTimeout(r, 600));
         return;
       }
     }
   }
 
   async ensureOrdersFilterIsAll(window) {
-    const hopper = window.slots[48];
+    let cur = this.bot.currentWindow || window;
+    const hopper = cur.slots[48];
     if (!hopper) return;
     if (isFilterAllSelected(hopper)) {
       console.log('✅ Orders Filter is already set to All.');
@@ -619,15 +636,16 @@ class AhScraperBot {
     }
 
     console.log('🔄 Orders Filter is NOT set to All. Cycling forward using left-click...');
-    for (let c = 0; c < 10; c++) {
+    for (let c = 0; c < 12; c++) {
       await this.bot.clickWindow(48, 0, 0); // Left-click cycles forward in /order
-      await new Promise(r => setTimeout(r, 1000));
-      const updated = window.slots[48];
+      await new Promise(r => setTimeout(r, 700));
+      cur = this.bot.currentWindow || window;
+      const updated = cur.slots[48];
       const isAll = isFilterAllSelected(updated);
       console.log(`[Orders Filter Click ${c + 1}] is All now? ${isAll}`);
       if (isAll) {
         console.log(`✅ Orders Filter successfully cycled to All after ${c + 1} clicks!`);
-        await new Promise(r => setTimeout(r, 800));
+        await new Promise(r => setTimeout(r, 600));
         return;
       }
     }
