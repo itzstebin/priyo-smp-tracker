@@ -123,25 +123,36 @@ class AhScraperBot {
     this.reconnectAttempts = 0;
   }
 
+  getBaseApiUrl() {
+    if (process.env.API_BASE_URL) return process.env.API_BASE_URL.replace(/\/+$/, '');
+    if (config.api?.endpoint) {
+      try {
+        const u = new URL(config.api.endpoint);
+        return `${u.protocol}//${u.host}`;
+      } catch (e) {}
+    }
+    return 'https://priyo-smp-tracker.vercel.app';
+  }
+
   getIngestEndpoint() {
     if (process.env.API_BASE_URL) {
       return `${process.env.API_BASE_URL.replace(/\/+$/, '')}/api/ingest`;
     }
-    return config.api?.endpoint || 'http://localhost:3000/api/ingest';
+    return config.api?.endpoint || `${this.getBaseApiUrl()}/api/ingest`;
   }
 
   getOrdersEndpoint() {
     if (process.env.API_BASE_URL) {
       return `${process.env.API_BASE_URL.replace(/\/+$/, '')}/api/ingest-orders`;
     }
-    return config.api?.ordersEndpoint || 'http://localhost:3000/api/ingest-orders';
+    return config.api?.ordersEndpoint || `${this.getBaseApiUrl()}/api/ingest-orders`;
   }
 
   getTriggerEndpoint() {
     if (process.env.API_BASE_URL) {
       return `${process.env.API_BASE_URL.replace(/\/+$/, '')}/api/bot/check-trigger`;
     }
-    return 'http://localhost:3000/api/bot/check-trigger';
+    return `${this.getBaseApiUrl()}/api/bot/check-trigger`;
   }
 
   start() {
@@ -263,7 +274,7 @@ class AhScraperBot {
         console.log('📝 Server requested registration! Sending /register command...');
         const regCmd = config.bot.registerCommand || `/register ${config.bot.autoLoginPassword} ${config.bot.autoLoginPassword}`;
         this.bot.chat(regCmd);
-      } else if (lower.includes('/login') || lower.includes("please login") || lower.includes("use the command /login")) {
+      } else if (!this.hasLoggedIn && (lower.includes('/login') || lower.includes("please login") || lower.includes("use the command /login") || lower.includes("please, login"))) {
         console.log('🔑 Server requested login! Sending /login command...');
         const logCmd = config.bot.loginCommand || `/login ${config.bot.autoLoginPassword}`;
         this.bot.chat(logCmd);
@@ -339,6 +350,7 @@ class AhScraperBot {
   }
 
   performAuth() {
+    if (this.hasLoggedIn) return;
     if (config.bot.loginCommand) {
       console.log(`🔑 Sending login command: ${config.bot.loginCommand}`);
       this.bot.chat(config.bot.loginCommand);
@@ -413,7 +425,7 @@ class AhScraperBot {
 
       console.log(`✅ Extracted 100% REAL stats for ${username} from in-game GUI:`, payload);
 
-      await fetch('http://localhost:3000/api/ingest-player-stats', {
+      await fetch(`${this.getBaseApiUrl()}/api/ingest-player-stats`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -489,7 +501,7 @@ class AhScraperBot {
 
       if (bounties.length > 0) {
         console.log(`🎯 Extracted ${bounties.length} active player bounties:`, bounties);
-        await fetch('http://localhost:3000/api/ingest-bounties', {
+        await fetch(`${this.getBaseApiUrl()}/api/ingest-bounties`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ bounties })
@@ -582,7 +594,7 @@ class AhScraperBot {
 
     if (foundAny) {
       console.log(`📊 Captured real in-game /stats for ${target}:`, statsPayload);
-      fetch('http://localhost:3000/api/ingest-player-stats', {
+      fetch(`${this.getBaseApiUrl()}/api/ingest-player-stats`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(statsPayload)
@@ -934,7 +946,7 @@ class AhScraperBot {
   }
 
   async pushOrdersToApi(orders) {
-    const endpoint = config.api.ordersEndpoint || 'http://localhost:3000/api/ingest-orders';
+    const endpoint = this.getOrdersEndpoint();
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
