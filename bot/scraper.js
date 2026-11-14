@@ -1124,3 +1124,21 @@ process.on('unhandledRejection', (reason) => {
 // Start scraper bot
 const scraper = new AhScraperBot();
 scraper.start();
+
+// If running in cloud environment (Railway, Render, Koyeb), listen on PORT for health checks
+if (process.env.PORT) {
+  const http = require('http');
+  const port = parseInt(process.env.PORT, 10);
+  const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      status: 'ok',
+      service: 'priyo-smp-tracker-bot',
+      account: config.bot.username,
+      uptime: process.uptime()
+    }));
+  });
+  server.listen(port, () => {
+    console.log(`🌐 Cloud healthcheck server listening on port ${port}`);
+  });
+}
