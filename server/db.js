@@ -4,7 +4,14 @@
  * Manages 8,463 official players, live auction listings, buy orders, price history, and DonutStats flips engine.
  */
 
-const sqlite3 = require('sqlite3').verbose();
+let sqlite3;
+try {
+  sqlite3 = require('sqlite3').verbose();
+} catch (err) {
+  console.warn('⚠️ [DB] sqlite3 failed to load (GLIBC / native module issue). Switching to in-memory memDb:', err.message);
+  module.exports = require('./memDb');
+  return;
+}
 const path = require('path');
 const fs = require('fs');
 
